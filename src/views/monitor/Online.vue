@@ -1,31 +1,32 @@
 <template>
   <div>
-    <el-card shadow="never">
-      <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="username" label="用户名" />
-        <el-table-column prop="ipaddr" label="登录IP" />
-        <el-table-column prop="loginTime" label="登录时间" />
-        <el-table-column label="操作" width="120">
-          <template #default="{ row }">
-            <el-popconfirm title="确认强制下线？" @confirm="handleForceLogout(row.tokenId)">
-              <template #reference>
-                <el-button link type="danger">强制下线</el-button>
-              </template>
-            </el-popconfirm>
+    <a-card :bordered="false">
+      <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="tokenId" :pagination="false">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'action'">
+            <a-popconfirm title="确认强制下线？" @confirm="handleForceLogout(record.tokenId)">
+              <a-button type="link" danger size="small">强制下线</a-button>
+            </a-popconfirm>
           </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+        </template>
+      </a-table>
+    </a-card>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { message } from 'ant-design-vue'
 import request from '@/utils/request'
 
 const loading = ref(false)
 const tableData = ref([])
+const columns = [
+  { title: '用户名', dataIndex: 'username' },
+  { title: '登录IP', dataIndex: 'ipaddr' },
+  { title: '登录时间', dataIndex: 'loginTime' },
+  { title: '操作', key: 'action', width: 120 }
+]
 
 async function loadData() {
   loading.value = true
@@ -39,7 +40,7 @@ async function loadData() {
 
 async function handleForceLogout(tokenId) {
   await request.delete(`/monitor/online/${tokenId}`)
-  ElMessage.success('操作成功')
+  message.success('操作成功')
   loadData()
 }
 

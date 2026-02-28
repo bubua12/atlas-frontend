@@ -1,64 +1,49 @@
 <template>
   <div>
-    <el-card shadow="never">
-      <el-form :inline="true">
-        <el-form-item>
-          <el-input v-model="query.roleName" placeholder="角色名称" clearable />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadData">搜索</el-button>
-          <el-button type="success" @click="openDialog()">新增</el-button>
-        </el-form-item>
-      </el-form>
+    <a-card :bordered="false">
+      <a-space style="margin-bottom:16px">
+        <a-input v-model:value="query.roleName" placeholder="角色名称" allow-clear />
+        <a-button type="primary" @click="loadData">搜索</a-button>
+        <a-button type="primary" ghost @click="openDialog()">新增</a-button>
+      </a-space>
 
-      <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="roleId" label="ID" width="80" />
-        <el-table-column prop="roleName" label="角色名称" />
-        <el-table-column prop="roleKey" label="权限标识" />
-        <el-table-column prop="status" label="状态" width="80">
-          <template #default="{ row }">
-            <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ row.status === 0 ? '正常' : '停用' }}</el-tag>
+      <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="roleId" :pagination="false">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'status'">
+            <a-tag :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
           </template>
-        </el-table-column>
-        <el-table-column label="操作" width="160">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="openDialog(row)">编辑</el-button>
-            <el-popconfirm title="确认删除？" @confirm="handleDelete(row.roleId)">
-              <template #reference>
-                <el-button link type="danger">删除</el-button>
-              </template>
-            </el-popconfirm>
+          <template v-if="column.key === 'action'">
+            <a-button type="link" size="small" @click="openDialog(record)">编辑</a-button>
+            <a-popconfirm title="确认删除？" @confirm="handleDelete(record.roleId)">
+              <a-button type="link" danger size="small">删除</a-button>
+            </a-popconfirm>
           </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+        </template>
+      </a-table>
+    </a-card>
 
-    <el-dialog v-model="dialogVisible" :title="form.roleId ? '编辑角色' : '新增角色'" width="500px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="form.roleName" />
-        </el-form-item>
-        <el-form-item label="权限标识" prop="roleKey">
-          <el-input v-model="form.roleKey" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-radio-group v-model="form.status">
-            <el-radio :value="0">正常</el-radio>
-            <el-radio :value="1">停用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
-      </template>
-    </el-dialog>
+    <a-modal v-model:open="dialogVisible" :title="form.roleId ? '编辑角色' : '新增角色'" @ok="handleSubmit">
+      <a-form :model="form" :rules="rules" ref="formRef" :label-col="{ span: 5 }">
+        <a-form-item label="角色名称" name="roleName">
+          <a-input v-model:value="form.roleName" />
+        </a-form-item>
+        <a-form-item label="权限标识" name="roleKey">
+          <a-input v-model:value="form.roleKey" />
+        </a-form-item>
+        <a-form-item label="状态">
+          <a-radio-group v-model:value="form.status">
+            <a-radio :value="0">正常</a-radio>
+            <a-radio :value="1">停用</a-radio>
+          </a-radio-group>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { message } from 'ant-design-vue'
 import { listRole, addRole, updateRole, deleteRole } from '@/api/role'
 
 const loading = ref(false)
@@ -68,9 +53,16 @@ const formRef = ref()
 const query = reactive({ roleName: '' })
 const form = reactive({ roleId: null, roleName: '', roleKey: '', status: 0 })
 const rules = {
-  roleName: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
-  roleKey: [{ required: true, message: '请输入权限标识', trigger: 'blur' }]
+  roleName: [{ required: true, message: '请输入角色名称' }],
+  roleKey: [{ required: true, message: '请输入权限标识' }]
 }
+const columns = [
+  { title: 'ID', dataIndex: 'roleId', width: 80 },
+  { title: '角色名称', dataIndex: 'roleName' },
+  { title: '权限标识', dataIndex: 'roleKey' },
+  { title: '状态', key: 'status', width: 80 },
+  { title: '操作', key: 'action', width: 160 }
+]
 
 async function loadData() {
   loading.value = true
@@ -94,7 +86,7 @@ async function handleSubmit() {
   if (!data.roleId) delete data.roleId
   try {
     data.roleId ? await updateRole(data) : await addRole(data)
-    ElMessage.success('操作成功')
+    message.success('操作成功')
     dialogVisible.value = false
     loadData()
   } catch (e) { /* interceptor already shows error */ }
@@ -102,7 +94,7 @@ async function handleSubmit() {
 
 async function handleDelete(id) {
   await deleteRole(id)
-  ElMessage.success('删除成功')
+  message.success('删除成功')
   loadData()
 }
 

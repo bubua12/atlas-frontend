@@ -1,11 +1,13 @@
 <template>
   <div>
-    <el-card shadow="never" v-loading="loading">
-      <el-descriptions title="服务器信息" :column="2" border v-if="info">
-        <el-descriptions-item v-for="(val, key) in info" :key="key" :label="key">{{ val }}</el-descriptions-item>
-      </el-descriptions>
-      <el-empty v-else description="暂无数据" />
-    </el-card>
+    <a-card :bordered="false">
+      <a-spin :spinning="loading">
+        <a-descriptions title="服务器信息" :column="2" bordered v-if="info">
+          <a-descriptions-item v-for="(val, key) in info" :key="key" :label="key">{{ val }}</a-descriptions-item>
+        </a-descriptions>
+        <a-empty v-else description="暂无数据" />
+      </a-spin>
+    </a-card>
   </div>
 </template>
 

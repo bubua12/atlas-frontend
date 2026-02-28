@@ -1,13 +1,13 @@
 <template>
-  <div class="app-layout">
+  <a-layout style="min-height:100vh">
     <Sidebar />
-    <div class="main-container">
+    <a-layout>
       <Navbar />
-      <div class="app-main">
+      <a-layout-content style="padding:16px;overflow-y:auto">
         <router-view />
-      </div>
-    </div>
-  </div>
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
 </template>
 
 <script setup>

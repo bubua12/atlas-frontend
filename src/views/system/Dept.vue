@@ -1,63 +1,50 @@
 <template>
   <div>
-    <el-card shadow="never">
-      <el-form :inline="true">
-        <el-form-item>
-          <el-button type="success" @click="openDialog()">新增</el-button>
-        </el-form-item>
-      </el-form>
+    <a-card :bordered="false">
+      <a-button type="primary" ghost style="margin-bottom:16px" @click="openDialog()">新增</a-button>
 
-      <el-table :data="tableData" border row-key="deptId" default-expand-all v-loading="loading">
-        <el-table-column prop="deptName" label="部门名称" />
-        <el-table-column prop="sort" label="排序" width="80" />
-        <el-table-column prop="status" label="状态" width="80">
-          <template #default="{ row }">
-            <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ row.status === 0 ? '正常' : '停用' }}</el-tag>
+      <a-table :columns="columns" :data-source="tableData" :loading="loading"
+        row-key="deptId" :pagination="false" default-expand-all-rows>
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'status'">
+            <a-tag :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
           </template>
-        </el-table-column>
-        <el-table-column label="操作" width="200">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="openDialog(row)">编辑</el-button>
-            <el-button link type="primary" @click="openDialog({ parentId: row.deptId })">新增</el-button>
-            <el-popconfirm title="确认删除？" @confirm="handleDelete(row.deptId)">
-              <template #reference>
-                <el-button link type="danger">删除</el-button>
-              </template>
-            </el-popconfirm>
+          <template v-if="column.key === 'action'">
+            <a-button type="link" size="small" @click="openDialog(record)">编辑</a-button>
+            <a-button type="link" size="small" @click="openDialog({ parentId: record.deptId })">新增</a-button>
+            <a-popconfirm title="确认删除？" @confirm="handleDelete(record.deptId)">
+              <a-button type="link" danger size="small">删除</a-button>
+            </a-popconfirm>
           </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
+        </template>
+      </a-table>
+    </a-card>
 
-    <el-dialog v-model="dialogVisible" :title="form.deptId ? '编辑部门' : '新增部门'" width="500px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
-        <el-form-item label="部门名称" prop="deptName">
-          <el-input v-model="form.deptName" />
-        </el-form-item>
-        <el-form-item label="上级部门">
-          <el-input v-model="form.parentId" placeholder="0为顶级" />
-        </el-form-item>
-        <el-form-item label="排序">
-          <el-input-number v-model="form.sort" :min="0" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-radio-group v-model="form.status">
-            <el-radio :value="0">正常</el-radio>
-            <el-radio :value="1">停用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
-      </template>
-    </el-dialog>
+    <a-modal v-model:open="dialogVisible" :title="form.deptId ? '编辑部门' : '新增部门'" @ok="handleSubmit" width="500px">
+      <a-form :model="form" :rules="rules" ref="formRef" :label-col="{ span: 5 }">
+        <a-form-item label="部门名称" name="deptName">
+          <a-input v-model:value="form.deptName" />
+        </a-form-item>
+        <a-form-item label="上级部门">
+          <a-input v-model:value="form.parentId" placeholder="0为顶级" />
+        </a-form-item>
+        <a-form-item label="排序">
+          <a-input-number v-model:value="form.sort" :min="0" />
+        </a-form-item>
+        <a-form-item label="状态">
+          <a-radio-group v-model:value="form.status">
+            <a-radio :value="0">正常</a-radio>
+            <a-radio :value="1">停用</a-radio>
+          </a-radio-group>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { message } from 'ant-design-vue'
 import { listDept, addDept, updateDept, deleteDept } from '@/api/dept'
 
 const loading = ref(false)
@@ -66,7 +53,13 @@ const dialogVisible = ref(false)
 const formRef = ref()
 const defaultForm = { deptId: null, deptName: '', parentId: 0, sort: 0, status: 0 }
 const form = reactive({ ...defaultForm })
-const rules = { deptName: [{ required: true, message: '请输入部门名称', trigger: 'blur' }] }
+const rules = { deptName: [{ required: true, message: '请输入部门名称' }] }
+const columns = [
+  { title: '部门名称', dataIndex: 'deptName' },
+  { title: '排序', dataIndex: 'sort', width: 80 },
+  { title: '状态', key: 'status', width: 80 },
+  { title: '操作', key: 'action', width: 200 }
+]
 
 async function loadData() {
   loading.value = true
@@ -90,7 +83,7 @@ async function handleSubmit() {
   if (!data.deptId) delete data.deptId
   try {
     data.deptId ? await updateDept(data) : await addDept(data)
-    ElMessage.success('操作成功')
+    message.success('操作成功')
     dialogVisible.value = false
     loadData()
   } catch (e) { /* interceptor already shows error */ }
@@ -98,7 +91,7 @@ async function handleSubmit() {
 
 async function handleDelete(id) {
   await deleteDept(id)
-  ElMessage.success('删除成功')
+  message.success('删除成功')
   loadData()
 }
 

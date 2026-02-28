@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
+import { message } from 'ant-design-vue'
 import { useUserStore } from '@/stores/user'
 import router from '@/router'
 
@@ -18,7 +18,7 @@ request.interceptors.response.use(
   res => {
     const { code, msg, data } = res.data
     if (code === 200) return data
-    ElMessage.error(msg || '请求失败')
+    message.error(msg || '请求失败')
     return Promise.reject(new Error(msg))
   },
   err => {
@@ -27,7 +27,7 @@ request.interceptors.response.use(
       userStore.logout()
       router.push('/login')
     }
-    ElMessage.error(err.message || '网络错误')
+    message.error(err.message || '网络错误')
     return Promise.reject(err)
   }
 )

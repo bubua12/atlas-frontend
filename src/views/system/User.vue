@@ -1,85 +1,59 @@
 <template>
   <div>
-    <el-card shadow="never">
-      <el-form :inline="true" :model="query">
-        <el-form-item>
-          <el-input v-model="query.username" placeholder="用户名" clearable />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadData">搜索</el-button>
-          <el-button type="success" @click="openDialog()">新增</el-button>
-        </el-form-item>
-      </el-form>
+    <a-card :bordered="false">
+      <a-space style="margin-bottom:16px">
+        <a-input v-model:value="query.username" placeholder="用户名" allow-clear />
+        <a-button type="primary" @click="loadData">搜索</a-button>
+        <a-button type="primary" ghost @click="openDialog()">新增</a-button>
+      </a-space>
 
-      <el-table :data="tableData" border stripe v-loading="loading">
-        <el-table-column prop="userId" label="ID" width="80" />
-        <el-table-column prop="username" label="用户名" />
-        <el-table-column prop="nickname" label="昵称" />
-        <el-table-column prop="email" label="邮箱" />
-        <el-table-column prop="phone" label="手机号" />
-        <el-table-column prop="status" label="状态" width="80">
-          <template #default="{ row }">
-            <el-tag :type="row.status === 0 ? 'success' : 'danger'">{{ row.status === 0 ? '正常' : '停用' }}</el-tag>
+      <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="userId"
+        :pagination="{ current: query.pageNum, pageSize: query.pageSize, total, showSizeChanger: true, pageSizeOptions: ['10','20','50'], onChange: onPageChange, onShowSizeChange: onPageChange }">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'status'">
+            <a-tag :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
           </template>
-        </el-table-column>
-        <el-table-column label="操作" width="160">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="openDialog(row)">编辑</el-button>
-            <el-popconfirm title="确认删除？" @confirm="handleDelete(row.userId)">
-              <template #reference>
-                <el-button link type="danger">删除</el-button>
-              </template>
-            </el-popconfirm>
+          <template v-if="column.key === 'action'">
+            <a-button type="link" size="small" @click="openDialog(record)">编辑</a-button>
+            <a-popconfirm title="确认删除？" @confirm="handleDelete(record.userId)">
+              <a-button type="link" danger size="small">删除</a-button>
+            </a-popconfirm>
           </template>
-        </el-table-column>
-      </el-table>
+        </template>
+      </a-table>
+    </a-card>
 
-      <el-pagination
-        style="margin-top:16px;justify-content:flex-end"
-        v-model:current-page="query.pageNum"
-        v-model:page-size="query.pageSize"
-        :total="total"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next"
-        @change="loadData"
-      />
-    </el-card>
-
-    <el-dialog v-model="dialogVisible" :title="form.userId ? '编辑用户' : '新增用户'" width="500px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" />
-        </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="form.nickname" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="!form.userId">
-          <el-input v-model="form.password" type="password" />
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="form.email" />
-        </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="form.phone" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-radio-group v-model="form.status">
-            <el-radio :value="0">正常</el-radio>
-            <el-radio :value="1">停用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
-      </template>
-    </el-dialog>
+    <a-modal v-model:open="dialogVisible" :title="form.userId ? '编辑用户' : '新增用户'" @ok="handleSubmit">
+      <a-form :model="form" :rules="rules" ref="formRef" :label-col="{ span: 4 }">
+        <a-form-item label="用户名" name="username">
+          <a-input v-model:value="form.username" />
+        </a-form-item>
+        <a-form-item label="昵称" name="nickname">
+          <a-input v-model:value="form.nickname" />
+        </a-form-item>
+        <a-form-item label="密码" name="password" v-if="!form.userId">
+          <a-input-password v-model:value="form.password" />
+        </a-form-item>
+        <a-form-item label="邮箱">
+          <a-input v-model:value="form.email" />
+        </a-form-item>
+        <a-form-item label="手机号">
+          <a-input v-model:value="form.phone" />
+        </a-form-item>
+        <a-form-item label="状态">
+          <a-radio-group v-model:value="form.status">
+            <a-radio :value="0">正常</a-radio>
+            <a-radio :value="1">停用</a-radio>
+          </a-radio-group>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { message } from 'ant-design-vue'
 import { listUser, addUser, updateUser, deleteUser } from '@/api/user'
 
 const loading = ref(false)
@@ -90,9 +64,24 @@ const formRef = ref()
 const query = reactive({ username: '', pageNum: 1, pageSize: 10 })
 const form = reactive({ userId: null, username: '', nickname: '', password: '', email: '', phone: '', status: 0 })
 const rules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+  username: [{ required: true, message: '请输入用户名' }],
+  nickname: [{ required: true, message: '请输入昵称' }],
+  password: [{ required: true, message: '请输入密码' }]
+}
+const columns = [
+  { title: 'ID', dataIndex: 'userId', width: 80 },
+  { title: '用户名', dataIndex: 'username' },
+  { title: '昵称', dataIndex: 'nickname' },
+  { title: '邮箱', dataIndex: 'email' },
+  { title: '手机号', dataIndex: 'phone' },
+  { title: '状态', key: 'status', width: 80 },
+  { title: '操作', key: 'action', width: 160 }
+]
+
+function onPageChange(page, size) {
+  query.pageNum = page
+  query.pageSize = size
+  loadData()
 }
 
 async function loadData() {
@@ -118,7 +107,7 @@ async function handleSubmit() {
   if (!data.userId) delete data.userId
   try {
     data.userId ? await updateUser(data) : await addUser(data)
-    ElMessage.success('操作成功')
+    message.success('操作成功')
     dialogVisible.value = false
     loadData()
   } catch (e) { /* interceptor already shows error */ }
@@ -126,7 +115,7 @@ async function handleSubmit() {
 
 async function handleDelete(id) {
   await deleteUser(id)
-  ElMessage.success('删除成功')
+  message.success('删除成功')
   loadData()
 }
 
