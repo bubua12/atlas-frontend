@@ -14,6 +14,7 @@
         <a-menu-item key="/system/menu">菜单管理</a-menu-item>
         <a-menu-item key="/system/dept">部门管理</a-menu-item>
         <a-menu-item key="/system/dict">字典管理</a-menu-item>
+        <a-menu-item key="/system/config">系统设置</a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="monitor">
         <template #icon><DesktopOutlined /></template>

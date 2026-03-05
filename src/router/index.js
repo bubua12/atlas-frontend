@@ -13,6 +13,7 @@ const routes = [
       { path: 'system/menu', component: () => import('@/views/system/Menu.vue'), meta: { title: '菜单管理' } },
       { path: 'system/dept', component: () => import('@/views/system/Dept.vue'), meta: { title: '部门管理' } },
       { path: 'system/dict', component: () => import('@/views/system/Dict.vue'), meta: { title: '字典管理' } },
+      { path: 'system/config', component: () => import('@/views/system/Config.vue'), meta: { title: '系统设置' } },
       { path: 'monitor/server', component: () => import('@/views/monitor/Server.vue'), meta: { title: '服务监控' } },
       { path: 'monitor/online', component: () => import('@/views/monitor/Online.vue'), meta: { title: '在线用户' } }
     ]
