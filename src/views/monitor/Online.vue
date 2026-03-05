@@ -4,7 +4,7 @@
       <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="tokenId" :pagination="false">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
-            <a-popconfirm title="确认强制下线？" @confirm="handleForceLogout(record.tokenId)">
+            <a-popconfirm title="确认强制下线？" @confirm="handleForceLogout(record.token)">
               <a-button type="link" danger size="small">强制下线</a-button>
             </a-popconfirm>
           </template>
