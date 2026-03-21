@@ -23,8 +23,9 @@ const loading = ref(false)
 const tableData = ref([])
 const columns = [
   { title: '用户名', dataIndex: 'username' },
-  { title: '登录IP', dataIndex: 'ipaddr' },
+  { title: '登录IP', dataIndex: 'clientIp' },
   { title: '登录时间', dataIndex: 'loginTime' },
+  { title: '过期时间', dataIndex: 'expireTime' },
   { title: '操作', key: 'action', width: 120 }
 ]
 

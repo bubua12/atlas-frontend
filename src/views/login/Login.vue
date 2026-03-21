@@ -49,6 +49,12 @@
           <a-button type="primary" block :loading="loading" @click="handleLogin">登 录</a-button>
         </a-form-item>
       </a-form>
+      <div class="other-login" v-if="loginType !== 'wechat'">
+        <a-divider plain>其他登录方式</a-divider>
+        <div class="login-icons">
+           <WeiboCircleOutlined class="login-icon" @click="handleWeiboLogin" />
+        </div>
+      </div>
     </a-card>
   </div>
 </template>
@@ -62,7 +68,8 @@ import { useThemeStore } from '@/stores/theme'
 import { sendSms, getWecomConfig } from '@/api/auth'
 import {
   UserOutlined, LockOutlined, MobileOutlined,
-  SafetyOutlined, BulbOutlined, BulbFilled
+  SafetyOutlined, BulbOutlined, BulbFilled,
+  WeiboCircleOutlined
 } from '@ant-design/icons-vue'
 
 const router = useRouter()
@@ -125,6 +132,10 @@ async function handleLogin() {
   } finally {
     loading.value = false
   }
+}
+
+function handleWeiboLogin() {
+  window.location.href = 'https://api.weibo.com/oauth2/authorize?client_id=4079653655&response_type=code&redirect_uri=https://atlas.bubua12.com/auth/success'
 }
 
 /** 企业微信 code 登录 */
@@ -210,5 +221,23 @@ onMounted(() => {
 }
 .wecom-qr-container iframe {
   border: none;
+}
+.other-login {
+  margin-top: 24px;
+}
+.login-icons {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 12px;
+}
+.login-icon {
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.login-icon:hover {
+  color: #faad14;
 }
 </style>
