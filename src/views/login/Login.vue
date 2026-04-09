@@ -2,6 +2,7 @@
 import {reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
 import router from "@/router/router.js";
+import {login} from "@/api/auth/auth.js";
 
 const loading = ref(false);
 const loginFormRef = ref();
@@ -34,7 +35,18 @@ const handleLogin = async () => {
 
   loading.value = true;
   try {
-    await new Promise(resolve => setTimeout(resolve, 600));
+    const result = await login({
+      username: loginForm.username,
+      password: loginForm.password
+    });
+
+    const token = result?.token || result?.accessToken || result?.jwt || result;
+    if (!token || typeof token !== "string") {
+      ElMessage.error("登录响应里未找到 token，请检查后端返回结构");
+      return;
+    }
+
+    localStorage.setItem("token", token);
 
     if (loginForm.remember) {
       localStorage.setItem("lastUsername", loginForm.username);
@@ -44,6 +56,9 @@ const handleLogin = async () => {
 
     ElMessage.success("登录成功");
     await router.push("/home");
+  } catch (error) {
+    const errorMessage = error?.response?.data?.msg || error?.message || "登录失败，请稍后重试";
+    ElMessage.error(errorMessage);
   } finally {
     loading.value = false;
   }
