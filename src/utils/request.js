@@ -47,16 +47,18 @@ request.interceptors.request.use(config => {
     if (token) {
         config.headers.Authorization = token;
     }
-    // todo 写着玩的
-    config.headers.Authorization = 'of course...';
 
     return config;
 })
 
 // 响应拦截器
 request.interceptors.response.use(response => {
-    console.log('完整的响应信息：', response);
-    const {code, msg, data} = response.data;
+    const responseData = response.data;
+    const {code, msg, data} = responseData || {};
+
+    if (typeof code === "undefined") {
+        return responseData;
+    }
 
     // 成功
     if (code === 200) {
@@ -71,7 +73,7 @@ request.interceptors.response.use(response => {
 
     // 其他错误
     alert(msg || '请求失败啦')
-    return Promise.reject(response.data);
+    return Promise.reject(responseData);
 }, error => {
     console.log(error.message || '网络错误');
     return Promise.reject(error);

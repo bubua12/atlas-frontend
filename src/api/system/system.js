@@ -2,7 +2,7 @@
 
 import request from '@/utils/request'
 
-// 登录
+// 获取菜单列表
 export function menuList() {
-    return request.get('/menu')
+    return request.get('/system/menu')
 }

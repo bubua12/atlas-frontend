@@ -37,7 +37,8 @@ const handleLogin = async () => {
   try {
     const result = await login({
       username: loginForm.username,
-      password: loginForm.password
+      password: loginForm.password,
+      grantType: 'password'
     });
 
     const token = result?.token || result?.accessToken || result?.jwt || result;
@@ -119,12 +120,14 @@ if (lastUsername) {
 
 <style scoped>
 .login-page {
-  min-height: calc(100vh - 96px);
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
   background: linear-gradient(135deg, #f7f9fc 0%, #eef3ff 100%);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .login-panel {
