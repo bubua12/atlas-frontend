@@ -13,7 +13,8 @@
             </a-button>
           </div>
           <a-table :columns="typeCols" :data-source="typeList" :loading="typeLoading"
-            row-key="dictId" :pagination="false" :row-class-name="(r) => r.dictId === currentType?.dictId ? 'ant-table-row-selected' : ''"
+            row-key="dictId" :pagination="false" size="middle"
+            :row-class-name="(r) => r.dictId === currentType?.dictId ? 'ant-table-row-selected' : ''"
             :custom-row="(r) => ({ onClick: () => handleTypeSelect(r) })">
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'status'">
@@ -49,7 +50,7 @@
             </a-button>
           </div>
           <a-table :columns="dataCols" :data-source="dataList" :loading="dataLoading"
-            row-key="dictCode" :pagination="false">
+            row-key="dictCode" :pagination="false" size="middle">
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'status'">
                 <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
@@ -141,17 +142,17 @@ const dataRules = {
 }
 
 const typeCols = [
-  { title: '字典名称', dataIndex: 'dictName' },
-  { title: '字典类型', dataIndex: 'dictType' },
-  { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 150 }
+  { title: '字典名称', dataIndex: 'dictName', ellipsis: true },
+  { title: '字典类型', dataIndex: 'dictType', ellipsis: true },
+  { title: '状态', key: 'status', width: 80, align: 'center' },
+  { title: '操作', key: 'action', width: 140, align: 'center' }
 ]
 const dataCols = [
-  { title: '字典标签', dataIndex: 'dictLabel' },
-  { title: '字典值', dataIndex: 'dictValue' },
-  { title: '排序', dataIndex: 'dictSort', width: 80 },
-  { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 150 }
+  { title: '字典标签', dataIndex: 'dictLabel', ellipsis: true },
+  { title: '字典值', dataIndex: 'dictValue', ellipsis: true },
+  { title: '排序', dataIndex: 'dictSort', width: 80, align: 'center' },
+  { title: '状态', key: 'status', width: 80, align: 'center' },
+  { title: '操作', key: 'action', width: 140, align: 'center' }
 ]
 
 async function loadTypes() {
@@ -228,3 +229,9 @@ async function handleDeleteData(code) {
 
 onMounted(loadTypes)
 </script>
+
+<style scoped>
+.split-layout.two-col {
+  grid-template-columns: 1.2fr 1fr;
+}
+</style>
