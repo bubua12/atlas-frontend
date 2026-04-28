@@ -8,6 +8,7 @@ const routes = [
     redirect: '/dashboard',
     children: [
       { path: 'dashboard', component: () => import('@/views/dashboard/Dashboard.vue'), meta: { title: '首页' } },
+      { path: 'profile', component: () => import('@/views/user/Profile.vue'), meta: { title: '个人中心' } },
       { path: 'system/user', component: () => import('@/views/system/User.vue'), meta: { title: '用户管理' } },
       { path: 'system/role', component: () => import('@/views/system/Role.vue'), meta: { title: '角色管理' } },
       { path: 'system/menu', component: () => import('@/views/system/Menu.vue'), meta: { title: '菜单管理' } },

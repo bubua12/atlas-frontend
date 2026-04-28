@@ -11,33 +11,70 @@
           <BulbFilled v-else />
         </template>
       </a-button>
-      <a-dropdown>
-        <a-button class="user-button">
-          <template #icon><UserOutlined /></template>
-          {{ userStore.username }}
-        </a-button>
-        <template #overlay>
-          <a-menu @click="handleLogout">
-            <a-menu-item key="logout">退出登录</a-menu-item>
-          </a-menu>
+      <a-popover v-model:open="profileOpen" trigger="click" placement="bottomRight" overlay-class-name="profile-popover">
+        <button class="avatar-button" type="button">
+          <a-avatar :src="userStore.avatar" :size="34">{{ avatarText }}</a-avatar>
+        </button>
+        <template #content>
+          <div class="profile-card">
+            <div class="profile-head">
+              <a-avatar :src="userStore.avatar" :size="44">{{ avatarText }}</a-avatar>
+              <div>
+                <div class="profile-name">{{ userStore.displayName || '-' }}</div>
+                <div class="profile-username">{{ profile?.username || userStore.username }}</div>
+              </div>
+            </div>
+            <div class="profile-info">
+              <div>
+                <span>姓名</span>
+                <strong>{{ profile?.nickname || '-' }}</strong>
+              </div>
+              <div>
+                <span>手机号</span>
+                <strong>{{ profile?.phone || '-' }}</strong>
+              </div>
+              <div>
+                <span>邮箱</span>
+                <strong>{{ profile?.email || '-' }}</strong>
+              </div>
+              <div>
+                <span>部门</span>
+                <strong>{{ profile?.deptName || '暂无部门' }}</strong>
+              </div>
+            </div>
+            <div class="profile-actions">
+              <a-button type="link" @click="goProfile">
+                <template #icon><IdcardOutlined /></template>
+                个人中心
+              </a-button>
+              <a-button type="link" danger @click="handleLogout">
+                <template #icon><LogoutOutlined /></template>
+                退出登录
+              </a-button>
+            </div>
+          </div>
         </template>
-      </a-dropdown>
+      </a-popover>
     </div>
   </a-layout-header>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useThemeStore } from '@/stores/theme'
 import { logout } from '@/api/auth'
-import { UserOutlined, BulbOutlined, BulbFilled } from '@ant-design/icons-vue'
+import { getProfile } from '@/api/user'
+import { BulbOutlined, BulbFilled, IdcardOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const themeStore = useThemeStore()
+const profileOpen = ref(false)
+const profile = computed(() => userStore.profile)
+const avatarText = computed(() => (userStore.displayName || userStore.username || 'A').slice(0, 1).toUpperCase())
 
 const headerStyle = computed(() => ({
   background: themeStore.isDark ? 'var(--app-panel)' : '#fff',
@@ -55,6 +92,20 @@ function handleLogout() {
     router.push('/login')
   })
 }
+
+function goProfile() {
+  profileOpen.value = false
+  router.push('/profile')
+}
+
+async function loadProfile() {
+  try {
+    const data = await getProfile()
+    userStore.setProfile(data)
+  } catch {}
+}
+
+onMounted(loadProfile)
 </script>
 
 <style scoped>
@@ -84,12 +135,90 @@ function handleLogout() {
   gap: 10px;
 }
 
-.user-button {
-  min-width: 96px;
+.avatar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 50%;
+  background: var(--app-panel);
+  cursor: pointer;
+}
+
+.avatar-button:hover {
+  border-color: #4f8cff;
+}
+
+.profile-card {
+  width: 280px;
+}
+
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.profile-name {
+  color: var(--app-text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.profile-username {
+  margin-top: 2px;
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
+.profile-info {
+  display: grid;
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.profile-info div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.profile-info span {
+  color: var(--app-text-muted);
+}
+
+.profile-info strong {
+  min-width: 0;
+  color: var(--app-text-secondary);
+  font-weight: 600;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 10px;
+}
+
+.profile-actions .ant-btn {
+  padding-inline: 0;
 }
 
 :global(html.dark) .app-header {
   border-bottom: 1px solid var(--app-border);
   box-shadow: none;
+}
+
+:global(.profile-popover .ant-popover-inner) {
+  padding: 14px 16px 10px;
 }
 </style>
