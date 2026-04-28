@@ -41,6 +41,7 @@
         :loading="loading"
         row-key="menuId"
         :pagination="false"
+        :scroll="{ x: 1060 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'menuType'">
@@ -130,13 +131,13 @@ const form = reactive({ ...defaultForm })
 const rules = { menuName: [{ required: true, message: '请输入菜单名称' }] }
 
 const columns = [
-  { title: '菜单名称', dataIndex: 'menuName' },
-  { title: '图标', dataIndex: 'icon', width: 80 },
-  { title: '排序', dataIndex: 'sort', width: 80 },
-  { title: '路由地址', dataIndex: 'path' },
-  { title: '类型', key: 'menuType', width: 80 },
-  { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 240 }
+  { title: '菜单名称', dataIndex: 'menuName', width: 200, ellipsis: true },
+  { title: '图标', dataIndex: 'icon', width: 90, align: 'center' },
+  { title: '排序', dataIndex: 'sort', width: 90, align: 'center' },
+  { title: '路由地址', dataIndex: 'path', width: 240, ellipsis: true },
+  { title: '类型', key: 'menuType', width: 90, align: 'center' },
+  { title: '状态', key: 'status', width: 90, align: 'center' },
+  { title: '操作', key: 'action', width: 240, fixed: 'right' }
 ]
 
 // 只保留有子节点的节点（叶子节点不上树）
@@ -243,7 +244,13 @@ onMounted(loadData)
 
 <style scoped>
 .menu-layout {
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
   min-height: calc(100vh - 112px);
+}
+
+@media (max-width: 1100px) {
+  .menu-layout {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

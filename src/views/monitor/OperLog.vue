@@ -52,6 +52,7 @@
         @change="handleTableChange"
         row-key="operId"
         size="middle"
+        :scroll="{ x: 1050 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
@@ -640,11 +641,19 @@ onMounted(loadData)
   .operlog-filter {
     grid-template-columns: 1fr;
   }
+}
+
+@media (max-width: 1180px) and (min-width: 761px) {
+  .operlog-filter {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   .filter-actions {
     justify-content: flex-start;
   }
+}
 
+@media (max-width: 760px) {
   .detail-hero {
     flex-direction: column;
   }

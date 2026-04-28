@@ -14,6 +14,7 @@
           </div>
           <a-table :columns="typeCols" :data-source="typeList" :loading="typeLoading"
             row-key="dictId" :pagination="false" size="middle"
+            :scroll="{ x: 640 }"
             :row-class-name="(r) => r.dictId === currentType?.dictId ? 'ant-table-row-selected' : ''"
             :custom-row="(r) => ({ onClick: () => handleTypeSelect(r) })">
             <template #bodyCell="{ column, record }">
@@ -50,7 +51,7 @@
             </a-button>
           </div>
           <a-table :columns="dataCols" :data-source="dataList" :loading="dataLoading"
-            row-key="dictCode" :pagination="false" size="middle">
+            row-key="dictCode" :pagination="false" size="middle" :scroll="{ x: 680 }">
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'status'">
                 <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
@@ -142,17 +143,17 @@ const dataRules = {
 }
 
 const typeCols = [
-  { title: '字典名称', dataIndex: 'dictName', ellipsis: true },
-  { title: '字典类型', dataIndex: 'dictType', ellipsis: true },
+  { title: '字典名称', dataIndex: 'dictName', width: 170, ellipsis: true },
+  { title: '字典类型', dataIndex: 'dictType', width: 190, ellipsis: true },
   { title: '状态', key: 'status', width: 80, align: 'center' },
-  { title: '操作', key: 'action', width: 140, align: 'center' }
+  { title: '操作', key: 'action', width: 140, align: 'center', fixed: 'right' }
 ]
 const dataCols = [
-  { title: '字典标签', dataIndex: 'dictLabel', ellipsis: true },
-  { title: '字典值', dataIndex: 'dictValue', ellipsis: true },
+  { title: '字典标签', dataIndex: 'dictLabel', width: 180, ellipsis: true },
+  { title: '字典值', dataIndex: 'dictValue', width: 180, ellipsis: true },
   { title: '排序', dataIndex: 'dictSort', width: 80, align: 'center' },
   { title: '状态', key: 'status', width: 80, align: 'center' },
-  { title: '操作', key: 'action', width: 140, align: 'center' }
+  { title: '操作', key: 'action', width: 140, align: 'center', fixed: 'right' }
 ]
 
 async function loadTypes() {
@@ -232,6 +233,12 @@ onMounted(loadTypes)
 
 <style scoped>
 .split-layout.two-col {
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: minmax(520px, 0.95fr) minmax(520px, 1.05fr);
+}
+
+@media (max-width: 1180px) {
+  .split-layout.two-col {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

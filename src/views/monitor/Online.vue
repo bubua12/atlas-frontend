@@ -11,7 +11,14 @@
           刷新
         </a-button>
       </div>
-      <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="tokenId" :pagination="false">
+      <a-table
+        :columns="columns"
+        :data-source="tableData"
+        :loading="loading"
+        row-key="tokenId"
+        :pagination="false"
+        :scroll="{ x: 820 }"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
             <a-popconfirm title="确认强制下线？" @confirm="handleForceLogout(record.token)">
@@ -36,11 +43,11 @@ import request from '@/utils/request'
 const loading = ref(false)
 const tableData = ref([])
 const columns = [
-  { title: '用户名', dataIndex: 'username' },
-  { title: '登录IP', dataIndex: 'clientIp' },
-  { title: '登录时间', dataIndex: 'loginTime' },
-  { title: '过期时间', dataIndex: 'expireTime' },
-  { title: '操作', key: 'action', width: 120 }
+  { title: '用户名', dataIndex: 'username', width: 160, ellipsis: true },
+  { title: '登录IP', dataIndex: 'clientIp', width: 150 },
+  { title: '登录时间', dataIndex: 'loginTime', width: 190 },
+  { title: '过期时间', dataIndex: 'expireTime', width: 190 },
+  { title: '操作', key: 'action', width: 130, fixed: 'right' }
 ]
 
 async function loadData() {

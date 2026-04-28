@@ -20,6 +20,7 @@
       </div>
 
       <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="userId"
+        :scroll="{ x: 1120 }"
         :pagination="{ current: query.pageNum, pageSize: query.pageSize, total, showSizeChanger: true, pageSizeOptions: ['10','20','50'], onChange: onPageChange, onShowSizeChange: onPageChange }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
@@ -125,12 +126,12 @@ const rules = {
 }
 const columns = [
   { title: 'ID', dataIndex: 'userId', width: 80 },
-  { title: '用户名', dataIndex: 'username' },
-  { title: '昵称', dataIndex: 'nickname' },
-  { title: '邮箱', key: 'email', dataIndex: 'email' },
-  { title: '手机号', key: 'phone', dataIndex: 'phone', width: 140 },
-  { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 240 }
+  { title: '用户名', dataIndex: 'username', width: 160, ellipsis: true },
+  { title: '昵称', dataIndex: 'nickname', width: 160, ellipsis: true },
+  { title: '邮箱', key: 'email', dataIndex: 'email', width: 260, ellipsis: true },
+  { title: '手机号', key: 'phone', dataIndex: 'phone', width: 150 },
+  { title: '状态', key: 'status', width: 90, align: 'center' },
+  { title: '操作', key: 'action', width: 220, fixed: 'right' }
 ]
 
 function onPageChange(page, size) {

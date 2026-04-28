@@ -13,6 +13,7 @@
       </div>
 
       <a-table :columns="columns" :data-source="tableData" :loading="loading"
+        :scroll="{ x: 820 }"
         row-key="deptId" :pagination="false" default-expand-all-rows>
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
@@ -82,10 +83,10 @@ const defaultForm = { deptId: null, deptName: '', parentId: 0, sort: 0, status: 
 const form = reactive({ ...defaultForm })
 const rules = { deptName: [{ required: true, message: '请输入部门名称' }] }
 const columns = [
-  { title: '部门名称', dataIndex: 'deptName' },
-  { title: '排序', dataIndex: 'sort', width: 80 },
-  { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 230 }
+  { title: '部门名称', dataIndex: 'deptName', width: 360, ellipsis: true },
+  { title: '排序', dataIndex: 'sort', width: 90, align: 'center' },
+  { title: '状态', key: 'status', width: 90, align: 'center' },
+  { title: '操作', key: 'action', width: 230, fixed: 'right' }
 ]
 
 async function loadData() {

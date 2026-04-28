@@ -19,7 +19,14 @@
         </div>
       </div>
 
-      <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="roleId" :pagination="false">
+      <a-table
+        :columns="columns"
+        :data-source="tableData"
+        :loading="loading"
+        row-key="roleId"
+        :pagination="false"
+        :scroll="{ x: 1120 }"
+      >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
             <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
@@ -209,11 +216,11 @@ const rules = {
 }
 const columns = [
   { title: 'ID', dataIndex: 'roleId', width: 80 },
-  { title: '角色名称', dataIndex: 'roleName' },
-  { title: '权限标识', dataIndex: 'roleKey' },
-  { title: '数据权限', key: 'dataScope', width: 130 },
-  { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 390 }
+  { title: '角色名称', dataIndex: 'roleName', width: 220, ellipsis: true },
+  { title: '权限标识', dataIndex: 'roleKey', width: 240, ellipsis: true },
+  { title: '数据权限', key: 'dataScope', width: 130, align: 'center' },
+  { title: '状态', key: 'status', width: 90, align: 'center' },
+  { title: '操作', key: 'action', width: 360, fixed: 'right' }
 ]
 
 function getDataScopeMeta(value) {

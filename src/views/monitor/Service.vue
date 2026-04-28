@@ -19,6 +19,7 @@
           :pagination="false"
           row-key="serviceName"
           size="middle"
+          :scroll="{ x: 980 }"
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'status'">
@@ -64,6 +65,7 @@
         :pagination="false"
         row-key="instanceId"
         size="small"
+        :scroll="{ x: 720 }"
         style="margin-top: 16px"
       >
         <template #bodyCell="{ column, record }">
@@ -93,14 +95,14 @@ const columns = [
   { title: '服务名称', dataIndex: 'serviceName', width: 180 },
   { title: '状态', key: 'status', width: 100, align: 'center' },
   { title: '实例数', dataIndex: 'instanceCount', width: 80, align: 'center' },
-  { title: '实例列表', key: 'instances' },
+  { title: '实例列表', key: 'instances', width: 540 },
   { title: '操作', key: 'action', width: 80, fixed: 'right' }
 ]
 
 const instanceColumns = [
-  { title: '实例ID', dataIndex: 'instanceId', ellipsis: true },
+  { title: '实例ID', dataIndex: 'instanceId', width: 220, ellipsis: true },
   { title: '状态', key: 'status', width: 80, align: 'center' },
-  { title: '服务地址', dataIndex: 'serviceUrl', ellipsis: true },
+  { title: '服务地址', dataIndex: 'serviceUrl', width: 250, ellipsis: true },
   { title: '注册时间', dataIndex: 'registrationTime', width: 170 }
 ]
 

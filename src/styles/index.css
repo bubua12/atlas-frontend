@@ -7,6 +7,7 @@ body, html {
 }
 
 :root {
+  --app-content-max: 1680px;
   --app-bg: #f5f7fa;
   --app-bg-soft: #fafbfc;
   --app-panel: #ffffff;
@@ -43,12 +44,20 @@ html.dark body, html.dark {
 }
 
 .app-content {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
   min-height: calc(100vh - 56px);
-  padding: 20px;
+  padding: 20px clamp(14px, 2vw, 32px);
   overflow-y: auto;
   background:
     radial-gradient(circle at top right, rgba(79, 140, 255, 0.08), transparent 320px),
     var(--app-bg);
+}
+
+.app-content > * {
+  width: 100%;
+  max-width: var(--app-content-max);
 }
 
 .page-shell {
@@ -191,6 +200,14 @@ html.dark body, html.dark {
   border-bottom-color: var(--app-border);
 }
 
+.page-panel .ant-table-wrapper {
+  min-width: 0;
+}
+
+.page-panel .ant-table-content {
+  overflow-x: auto;
+}
+
 html.dark .page-panel.ant-card {
   box-shadow: var(--app-shadow);
 }
@@ -267,7 +284,7 @@ html.dark .ant-tree {
 
 @media (max-width: 900px) {
   .app-content {
-    padding: 14px;
+    padding: 14px 12px;
   }
 
   .page-toolbar,
@@ -282,6 +299,12 @@ html.dark .ant-tree {
 
   .split-layout.two-col {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --app-content-max: 1720px;
   }
 }
 

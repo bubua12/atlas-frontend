@@ -14,7 +14,7 @@
       <a-spin :spinning="loading">
         <template v-if="info">
           <a-row :gutter="16" style="margin-bottom: 16px">
-            <a-col :span="12">
+            <a-col :xs="24" :lg="12">
               <a-card title="基础信息" size="small">
                 <a-descriptions :column="1" size="small" :label-style="{ width: '120px' }">
                   <a-descriptions-item label="主机名">{{ info.hostName }}</a-descriptions-item>
@@ -25,7 +25,7 @@
                 </a-descriptions>
               </a-card>
             </a-col>
-            <a-col :span="12">
+            <a-col :xs="24" :lg="12">
               <a-card title="CPU 信息" size="small">
                 <a-descriptions :column="1" size="small" :label-style="{ width: '120px' }">
                   <a-descriptions-item label="核心数">{{ info.cpu?.processors }}</a-descriptions-item>
@@ -38,7 +38,7 @@
           </a-row>
 
           <a-row :gutter="16" style="margin-bottom: 16px">
-            <a-col :span="12">
+            <a-col :xs="24" :lg="12">
               <a-card title="JVM 信息" size="small">
                 <a-descriptions :column="1" size="small" :label-style="{ width: '120px' }">
                   <a-descriptions-item label="最大内存">{{ info.jvm?.maxMemory }} MB</a-descriptions-item>
@@ -52,7 +52,7 @@
                 </a-descriptions>
               </a-card>
             </a-col>
-            <a-col :span="12">
+            <a-col :xs="24" :lg="12">
               <a-card title="物理内存" size="small">
                 <a-descriptions :column="1" size="small" :label-style="{ width: '120px' }">
                   <a-descriptions-item label="总内存">{{ info.sys?.totalMemory }} MB</a-descriptions-item>
