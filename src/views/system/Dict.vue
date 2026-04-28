@@ -1,52 +1,77 @@
 <template>
-  <div>
-    <a-row :gutter="16">
-      <a-col :span="10">
-        <a-card :bordered="false" title="字典类型">
-          <template #extra>
-            <a-button type="primary" ghost size="small" @click="openTypeDialog()">新增</a-button>
-          </template>
+  <div class="page-shell">
+    <div class="split-layout two-col">
+      <a-card :bordered="false" class="page-panel side-panel">
+          <div class="panel-heading">
+            <div>
+              <h3 class="panel-heading-title">字典类型</h3>
+              <div class="panel-heading-desc">点击左侧类型查看右侧字典项</div>
+            </div>
+            <a-button type="primary" @click="openTypeDialog()">
+              <template #icon><PlusOutlined /></template>
+              新增
+            </a-button>
+          </div>
           <a-table :columns="typeCols" :data-source="typeList" :loading="typeLoading"
             row-key="dictId" :pagination="false" :row-class-name="(r) => r.dictId === currentType?.dictId ? 'ant-table-row-selected' : ''"
             :custom-row="(r) => ({ onClick: () => handleTypeSelect(r) })">
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'status'">
-                <a-tag :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
+                <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
               </template>
               <template v-if="column.key === 'action'">
-                <a-button type="link" size="small" @click.stop="openTypeDialog(record)">编辑</a-button>
-                <a-popconfirm title="确认删除？" @confirm="handleDeleteType(record.dictId)">
-                  <a-button type="link" danger size="small" @click.stop>删除</a-button>
-                </a-popconfirm>
+                <div class="table-actions">
+                  <a-button type="link" size="small" @click.stop="openTypeDialog(record)">
+                    <template #icon><EditOutlined /></template>
+                    编辑
+                  </a-button>
+                  <a-popconfirm title="确认删除？" @confirm="handleDeleteType(record.dictId)">
+                    <a-button type="link" danger size="small" @click.stop>
+                      <template #icon><DeleteOutlined /></template>
+                      删除
+                    </a-button>
+                  </a-popconfirm>
+                </div>
               </template>
             </template>
           </a-table>
         </a-card>
-      </a-col>
 
-      <a-col :span="14">
-        <a-card :bordered="false">
-          <template #title>字典数据 {{ currentType ? '- ' + currentType.dictName : '' }}</template>
-          <template #extra>
-            <a-button type="primary" ghost size="small" :disabled="!currentType" @click="openDataDialog()">新增</a-button>
-          </template>
+      <a-card :bordered="false" class="page-panel content-panel">
+          <div class="panel-heading">
+            <div>
+              <h3 class="panel-heading-title">字典数据 {{ currentType ? '- ' + currentType.dictName : '' }}</h3>
+              <div class="panel-heading-desc">{{ currentType ? currentType.dictType : '先选择一个字典类型' }}</div>
+            </div>
+            <a-button type="primary" :disabled="!currentType" @click="openDataDialog()">
+              <template #icon><PlusOutlined /></template>
+              新增
+            </a-button>
+          </div>
           <a-table :columns="dataCols" :data-source="dataList" :loading="dataLoading"
             row-key="dictCode" :pagination="false">
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'status'">
-                <a-tag :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
+                <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
               </template>
               <template v-if="column.key === 'action'">
-                <a-button type="link" size="small" @click="openDataDialog(record)">编辑</a-button>
-                <a-popconfirm title="确认删除？" @confirm="handleDeleteData(record.dictCode)">
-                  <a-button type="link" danger size="small">删除</a-button>
-                </a-popconfirm>
+                <div class="table-actions">
+                  <a-button type="link" size="small" @click="openDataDialog(record)">
+                    <template #icon><EditOutlined /></template>
+                    编辑
+                  </a-button>
+                  <a-popconfirm title="确认删除？" @confirm="handleDeleteData(record.dictCode)">
+                    <a-button type="link" danger size="small">
+                      <template #icon><DeleteOutlined /></template>
+                      删除
+                    </a-button>
+                  </a-popconfirm>
+                </div>
               </template>
             </template>
           </a-table>
         </a-card>
-      </a-col>
-    </a-row>
+    </div>
 
     <a-modal v-model:open="typeDialogVisible" :title="typeForm.dictId ? '编辑字典类型' : '新增字典类型'" @ok="handleTypeSubmit">
       <a-form :model="typeForm" :rules="typeRules" ref="typeFormRef" :label-col="{ span: 5 }">
@@ -90,6 +115,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { listDictType, addDictType, updateDictType, deleteDictType, getDictData, addDictData, updateDictData, deleteDictData } from '@/api/dict'
 
 const typeLoading = ref(false)
@@ -118,14 +144,14 @@ const typeCols = [
   { title: '字典名称', dataIndex: 'dictName' },
   { title: '字典类型', dataIndex: 'dictType' },
   { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 120 }
+  { title: '操作', key: 'action', width: 150 }
 ]
 const dataCols = [
   { title: '字典标签', dataIndex: 'dictLabel' },
   { title: '字典值', dataIndex: 'dictValue' },
   { title: '排序', dataIndex: 'dictSort', width: 80 },
   { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 120 }
+  { title: '操作', key: 'action', width: 150 }
 ]
 
 async function loadTypes() {

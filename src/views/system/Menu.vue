@@ -1,7 +1,13 @@
 <template>
-  <div style="display:flex;gap:16px;height:100%">
-    <!-- 左侧菜单树 -->
-    <a-card :bordered="false" style="width:280px;flex-shrink:0;overflow:auto">
+  <div class="page-shell">
+    <div class="split-layout menu-layout">
+    <a-card :bordered="false" class="page-panel side-panel">
+      <div class="panel-heading">
+        <div>
+          <h3 class="panel-heading-title">菜单树</h3>
+          <div class="panel-heading-desc">按目录层级筛选子菜单</div>
+        </div>
+      </div>
       <a-input-search
         v-model:value="searchText"
         placeholder="搜索菜单"
@@ -17,11 +23,16 @@
       />
     </a-card>
 
-    <!-- 右侧列表 -->
-    <a-card :bordered="false" style="flex:1;overflow:auto">
-      <div style="display:flex;justify-content:space-between;margin-bottom:16px">
-        <span style="font-size:15px;font-weight:500">{{ currentNodeName }}</span>
-        <a-button type="primary" ghost @click="openDialog()">新增</a-button>
+    <a-card :bordered="false" class="page-panel content-panel">
+      <div class="page-toolbar">
+        <div class="page-title-block">
+          <h2 class="page-title">{{ currentNodeName }}</h2>
+          <div class="page-subtitle">维护菜单、按钮权限和路由入口</div>
+        </div>
+        <a-button type="primary" @click="openDialog()">
+          <template #icon><PlusOutlined /></template>
+          新增菜单
+        </a-button>
       </div>
 
       <a-table
@@ -38,20 +49,31 @@
             <a-tag v-else color="orange">按钮</a-tag>
           </template>
           <template v-if="column.key === 'status'">
-            <a-tag :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
+            <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
           </template>
           <template v-if="column.key === 'action'">
-            <a-button type="link" size="small" @click="openDialog(record)">编辑</a-button>
-            <a-button type="link" size="small" @click="openDialog({ parentId: record.menuId })">新增子项</a-button>
-            <a-popconfirm title="确认删除？" @confirm="handleDelete(record.menuId)">
-              <a-button type="link" danger size="small">删除</a-button>
-            </a-popconfirm>
+            <div class="table-actions">
+              <a-button type="link" size="small" @click="openDialog(record)">
+                <template #icon><EditOutlined /></template>
+                编辑
+              </a-button>
+              <a-button type="link" size="small" @click="openDialog({ parentId: record.menuId })">
+                <template #icon><PlusOutlined /></template>
+                新增子项
+              </a-button>
+              <a-popconfirm title="确认删除？" @confirm="handleDelete(record.menuId)">
+                <a-button type="link" danger size="small">
+                  <template #icon><DeleteOutlined /></template>
+                  删除
+                </a-button>
+              </a-popconfirm>
+            </div>
           </template>
         </template>
       </a-table>
     </a-card>
+    </div>
 
-    <!-- 编辑弹窗 -->
     <a-modal v-model:open="dialogVisible" :title="form.menuId ? '编辑菜单' : '新增菜单'" @ok="handleSubmit" width="600px">
       <a-form :model="form" :rules="rules" ref="formRef" :label-col="{ span: 5 }">
         <a-form-item label="菜单名称" name="menuName">
@@ -93,6 +115,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { listMenu, addMenu, updateMenu, deleteMenu } from '@/api/menu'
 
 const loading = ref(false)
@@ -113,7 +136,7 @@ const columns = [
   { title: '路由地址', dataIndex: 'path' },
   { title: '类型', key: 'menuType', width: 80 },
   { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 220 }
+  { title: '操作', key: 'action', width: 240 }
 ]
 
 // 只保留有子节点的节点（叶子节点不上树）
@@ -217,3 +240,10 @@ async function handleDelete(id) {
 
 onMounted(loadData)
 </script>
+
+<style scoped>
+.menu-layout {
+  grid-template-columns: 300px minmax(0, 1fr);
+  min-height: calc(100vh - 112px);
+}
+</style>

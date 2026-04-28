@@ -1,24 +1,51 @@
 <template>
-  <div>
-    <a-card :bordered="false">
-      <a-space style="margin-bottom:16px">
-        <a-input v-model:value="query.username" placeholder="用户名" allow-clear />
-        <a-button type="primary" @click="loadData">搜索</a-button>
-        <a-button type="primary" ghost @click="openDialog()">新增</a-button>
-      </a-space>
+  <div class="page-shell">
+    <a-card :bordered="false" class="page-panel">
+      <div class="page-toolbar">
+        <div class="page-title-block">
+          <h2 class="page-title">用户管理</h2>
+          <div class="page-subtitle">维护用户账号、状态和角色绑定</div>
+        </div>
+        <div class="page-toolbar-main">
+          <a-input v-model:value="query.username" class="toolbar-input" placeholder="用户名" allow-clear @press-enter="loadData" />
+          <a-button @click="loadData">
+            <template #icon><SearchOutlined /></template>
+            搜索
+          </a-button>
+          <a-button type="primary" @click="openDialog()">
+            <template #icon><PlusOutlined /></template>
+            新增
+          </a-button>
+        </div>
+      </div>
 
       <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="userId"
         :pagination="{ current: query.pageNum, pageSize: query.pageSize, total, showSizeChanger: true, pageSizeOptions: ['10','20','50'], onChange: onPageChange, onShowSizeChange: onPageChange }">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
-            <a-tag :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
+            <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
+          </template>
+          <template v-if="column.key === 'contact'">
+            <div>{{ record.email || '-' }}</div>
+            <div class="muted-text">{{ record.phone || '-' }}</div>
           </template>
           <template v-if="column.key === 'action'">
-            <a-button type="link" size="small" @click="openDialog(record)">编辑</a-button>
-            <a-button type="link" size="small" @click="openRoleDialog(record)">分配角色</a-button>
-            <a-popconfirm title="确认删除？" @confirm="handleDelete(record.userId)">
-              <a-button type="link" danger size="small">删除</a-button>
-            </a-popconfirm>
+            <div class="table-actions">
+              <a-button type="link" size="small" @click="openDialog(record)">
+                <template #icon><EditOutlined /></template>
+                编辑
+              </a-button>
+              <a-button type="link" size="small" @click="openRoleDialog(record)">
+                <template #icon><TeamOutlined /></template>
+                分配角色
+              </a-button>
+              <a-popconfirm title="确认删除？" @confirm="handleDelete(record.userId)">
+                <a-button type="link" danger size="small">
+                  <template #icon><DeleteOutlined /></template>
+                  删除
+                </a-button>
+              </a-popconfirm>
+            </div>
           </template>
         </template>
       </a-table>
@@ -48,7 +75,7 @@
           </a-radio-group>
         </a-form-item>
         <a-form-item label="角色" v-if="form.userId">
-          <a-checkbox-group v-model:value="form.roleIds" style="display:flex;flex-wrap:wrap;gap:12px">
+          <a-checkbox-group v-model:value="form.roleIds" class="selection-list">
             <a-checkbox v-for="item in roleOptions" :key="item.roleId" :value="item.roleId">
               {{ item.roleName }}
             </a-checkbox>
@@ -59,7 +86,7 @@
 
     <a-modal v-model:open="roleDialogVisible" :title="`分配角色 - ${currentUserName || ''}`" @ok="handleRoleSubmit">
       <a-spin :spinning="roleLoading">
-        <a-checkbox-group v-model:value="selectedRoleIds" style="display:flex;flex-wrap:wrap;gap:12px">
+        <a-checkbox-group v-model:value="selectedRoleIds" class="selection-list">
           <a-checkbox v-for="item in roleOptions" :key="item.roleId" :value="item.roleId">
             {{ item.roleName }}
           </a-checkbox>
@@ -72,7 +99,8 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
-import { listUser, getUser, addUser, updateUser, deleteUser, assignUserRoles, getUserRoles } from '@/api/user'
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined, TeamOutlined } from '@ant-design/icons-vue'
+import { listUser, addUser, updateUser, deleteUser, assignUserRoles, getUserRoles } from '@/api/user'
 import { listRole } from '@/api/role'
 
 const loading = ref(false)
@@ -97,10 +125,9 @@ const columns = [
   { title: 'ID', dataIndex: 'userId', width: 80 },
   { title: '用户名', dataIndex: 'username' },
   { title: '昵称', dataIndex: 'nickname' },
-  { title: '邮箱', dataIndex: 'email' },
-  { title: '手机号', dataIndex: 'phone' },
+  { title: '联系方式', key: 'contact' },
   { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 220 }
+  { title: '操作', key: 'action', width: 240 }
 ]
 
 function onPageChange(page, size) {
@@ -129,14 +156,6 @@ async function openDialog(row) {
     form.roleIds = Array.isArray(userRoleIds) ? userRoleIds : []
   }
   dialogVisible.value = true
-}
-
-function parseUserRoleIds(user) {
-  if (Array.isArray(user.roleIds)) return user.roleIds
-  if (Array.isArray(user.roleIdList)) return user.roleIdList
-  if (Array.isArray(user.roles)) return user.roles.map(item => item.roleId).filter(Boolean)
-  if (Array.isArray(user.roleList)) return user.roleList.map(item => item.roleId).filter(Boolean)
-  return []
 }
 
 async function openRoleDialog(row) {

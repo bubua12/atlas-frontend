@@ -1,20 +1,40 @@
 <template>
-  <div>
-    <a-card :bordered="false">
-      <a-button type="primary" ghost style="margin-bottom:16px" @click="openDialog()">新增</a-button>
+  <div class="page-shell">
+    <a-card :bordered="false" class="page-panel">
+      <div class="page-toolbar">
+        <div class="page-title-block">
+          <h2 class="page-title">部门管理</h2>
+          <div class="page-subtitle">维护组织层级、排序和启停状态</div>
+        </div>
+        <a-button type="primary" @click="openDialog()">
+          <template #icon><PlusOutlined /></template>
+          新增部门
+        </a-button>
+      </div>
 
       <a-table :columns="columns" :data-source="tableData" :loading="loading"
         row-key="deptId" :pagination="false" default-expand-all-rows>
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
-            <a-tag :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
+            <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
           </template>
           <template v-if="column.key === 'action'">
-            <a-button type="link" size="small" @click="openDialog(record)">编辑</a-button>
-            <a-button type="link" size="small" @click="openDialog({ parentId: record.deptId })">新增</a-button>
-            <a-popconfirm title="确认删除？" @confirm="handleDelete(record.deptId)">
-              <a-button type="link" danger size="small">删除</a-button>
-            </a-popconfirm>
+            <div class="table-actions">
+              <a-button type="link" size="small" @click="openDialog(record)">
+                <template #icon><EditOutlined /></template>
+                编辑
+              </a-button>
+              <a-button type="link" size="small" @click="openDialog({ parentId: record.deptId })">
+                <template #icon><PlusOutlined /></template>
+                新增下级
+              </a-button>
+              <a-popconfirm title="确认删除？" @confirm="handleDelete(record.deptId)">
+                <a-button type="link" danger size="small">
+                  <template #icon><DeleteOutlined /></template>
+                  删除
+                </a-button>
+              </a-popconfirm>
+            </div>
           </template>
         </template>
       </a-table>
@@ -26,7 +46,13 @@
           <a-input v-model:value="form.deptName" />
         </a-form-item>
         <a-form-item label="上级部门">
-          <a-input v-model:value="form.parentId" placeholder="0为顶级" />
+          <a-tree-select
+            v-model:value="form.parentId"
+            :tree-data="[{ deptId: 0, deptName: '顶级部门', children: tableData }]"
+            :field-names="{ label: 'deptName', value: 'deptId', children: 'children' }"
+            placeholder="请选择上级部门"
+            tree-default-expand-all
+          />
         </a-form-item>
         <a-form-item label="排序">
           <a-input-number v-model:value="form.sort" :min="0" />
@@ -45,6 +71,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { listDept, addDept, updateDept, deleteDept } from '@/api/dept'
 
 const loading = ref(false)
@@ -58,7 +85,7 @@ const columns = [
   { title: '部门名称', dataIndex: 'deptName' },
   { title: '排序', dataIndex: 'sort', width: 80 },
   { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 200 }
+  { title: '操作', key: 'action', width: 230 }
 ]
 
 async function loadData() {

@@ -11,6 +11,193 @@ html.dark body, html.dark {
   color: rgba(255, 255, 255, 0.85);
 }
 
+.app-content {
+  min-height: calc(100vh - 56px);
+  padding: 20px;
+  overflow-y: auto;
+  background: #f5f7fa;
+}
+
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-panel.ant-card {
+  border-radius: 8px;
+  border: 1px solid #edf0f5;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.page-panel .ant-card-body {
+  padding: 18px;
+}
+
+.page-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.page-toolbar-main {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.page-title-block {
+  min-width: 0;
+}
+
+.page-title {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.page-subtitle {
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}
+
+.toolbar-input {
+  width: 220px;
+}
+
+.table-actions {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.table-actions .ant-btn {
+  padding-inline: 4px;
+}
+
+.status-tag {
+  min-width: 48px;
+  text-align: center;
+}
+
+.muted-text {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.split-layout {
+  display: grid;
+  gap: 16px;
+}
+
+.split-layout.two-col {
+  grid-template-columns: minmax(280px, 0.9fr) minmax(420px, 1.4fr);
+}
+
+.side-panel.ant-card,
+.content-panel.ant-card {
+  min-height: 100%;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.panel-heading-title {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.panel-heading-desc {
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}
+
+.selection-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.selection-list .ant-checkbox-wrapper {
+  margin-inline-start: 0;
+  padding: 6px 10px;
+  border: 1px solid #edf0f5;
+  border-radius: 6px;
+}
+
+.tree-panel {
+  max-height: calc(100vh - 190px);
+  overflow: auto;
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: 600;
+  background: #fafbfc;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom-color: #f0f2f5;
+}
+
+html.dark .app-content {
+  background: #141414;
+}
+
+html.dark .page-panel.ant-card {
+  border-color: #303030;
+  box-shadow: none;
+}
+
+html.dark .page-title,
+html.dark .panel-heading-title {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+html.dark .page-subtitle,
+html.dark .panel-heading-desc,
+html.dark .muted-text {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+html.dark .selection-list .ant-checkbox-wrapper {
+  border-color: #303030;
+}
+
+@media (max-width: 900px) {
+  .app-content {
+    padding: 14px;
+  }
+
+  .page-toolbar,
+  .panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .toolbar-input {
+    width: 100%;
+  }
+
+  .split-layout.two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
 .login-container {
   display: flex;
   justify-content: center;

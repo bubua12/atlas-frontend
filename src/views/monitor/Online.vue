@@ -1,11 +1,24 @@
 <template>
-  <div>
-    <a-card :bordered="false">
+  <div class="page-shell">
+    <a-card :bordered="false" class="page-panel">
+      <div class="page-toolbar">
+        <div class="page-title-block">
+          <h2 class="page-title">在线用户</h2>
+          <div class="page-subtitle">查看在线会话并按需强制下线</div>
+        </div>
+        <a-button @click="loadData">
+          <template #icon><ReloadOutlined /></template>
+          刷新
+        </a-button>
+      </div>
       <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="tokenId" :pagination="false">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
             <a-popconfirm title="确认强制下线？" @confirm="handleForceLogout(record.token)">
-              <a-button type="link" danger size="small">强制下线</a-button>
+              <a-button type="link" danger size="small">
+                <template #icon><LogoutOutlined /></template>
+                强制下线
+              </a-button>
             </a-popconfirm>
           </template>
         </template>
@@ -17,6 +30,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
+import { LogoutOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import request from '@/utils/request'
 
 const loading = ref(false)

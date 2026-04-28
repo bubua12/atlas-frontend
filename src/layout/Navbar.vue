@@ -1,13 +1,21 @@
 <template>
-  <a-layout-header :style="headerStyle">
-    <span>{{ route.meta.title }}</span>
-    <div style="display:flex;align-items:center;gap:12px">
-      <span style="cursor:pointer;font-size:18px" @click="themeStore.toggle()">
-        <BulbOutlined v-if="!themeStore.isDark" />
-        <BulbFilled v-else />
-      </span>
+  <a-layout-header :style="headerStyle" class="app-header">
+    <div>
+      <div class="header-title">{{ route.meta.title }}</div>
+      <div class="header-subtitle">Atlas Enterprise Platform</div>
+    </div>
+    <div class="header-actions">
+      <a-button shape="circle" @click="themeStore.toggle()">
+        <template #icon>
+          <BulbOutlined v-if="!themeStore.isDark" />
+          <BulbFilled v-else />
+        </template>
+      </a-button>
       <a-dropdown>
-        <span style="cursor:pointer"><UserOutlined style="margin-right:4px" />{{ userStore.username }}</span>
+        <a-button class="user-button">
+          <template #icon><UserOutlined /></template>
+          {{ userStore.username }}
+        </a-button>
         <template #overlay>
           <a-menu @click="handleLogout">
             <a-menu-item key="logout">退出登录</a-menu-item>
@@ -33,9 +41,8 @@ const themeStore = useThemeStore()
 
 const headerStyle = computed(() => ({
   background: themeStore.isDark ? '#141414' : '#fff',
-  padding: '0 16px',
-  height: '50px',
-  lineHeight: '50px',
+  padding: '0 20px',
+  height: '56px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -49,3 +56,43 @@ function handleLogout() {
   })
 }
 </script>
+
+<style scoped>
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-title {
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.header-subtitle {
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-button {
+  min-width: 96px;
+}
+
+:global(html.dark) .header-title {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+:global(html.dark) .header-subtitle {
+  color: rgba(255, 255, 255, 0.45);
+}
+</style>

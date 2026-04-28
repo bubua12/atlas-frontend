@@ -1,25 +1,59 @@
 <template>
-  <div>
-    <a-card :bordered="false">
-      <a-space style="margin-bottom:16px">
-        <a-input v-model:value="query.roleName" placeholder="角色名称" allow-clear />
-        <a-button type="primary" @click="loadData">搜索</a-button>
-        <a-button type="primary" ghost @click="openDialog()">新增</a-button>
-      </a-space>
+  <div class="page-shell">
+    <a-card :bordered="false" class="page-panel">
+      <div class="page-toolbar">
+        <div class="page-title-block">
+          <h2 class="page-title">角色管理</h2>
+          <div class="page-subtitle">维护功能权限、数据权限和用户授权关系</div>
+        </div>
+        <div class="page-toolbar-main">
+          <a-input v-model:value="query.roleName" class="toolbar-input" placeholder="角色名称" allow-clear @press-enter="loadData" />
+          <a-button @click="loadData">
+            <template #icon><SearchOutlined /></template>
+            搜索
+          </a-button>
+          <a-button type="primary" @click="openDialog()">
+            <template #icon><PlusOutlined /></template>
+            新增
+          </a-button>
+        </div>
+      </div>
 
       <a-table :columns="columns" :data-source="tableData" :loading="loading" row-key="roleId" :pagination="false">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
-            <a-tag :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
+            <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
+          </template>
+          <template v-if="column.key === 'dataScope'">
+            <a-tag :color="getDataScopeMeta(record.dataScope).color">
+              {{ getDataScopeMeta(record.dataScope).label }}
+            </a-tag>
           </template>
           <template v-if="column.key === 'action'">
-            <a-button type="link" size="small" @click="openDialog(record)">编辑</a-button>
-            <a-button type="link" size="small" @click="openDataScopeDialog(record)">数据权限</a-button>
-            <a-button type="link" size="small" @click="openUserDialog(record)">分配用户</a-button>
-            <a-button type="link" size="small" @click="openMenuDialog(record)">绑定菜单</a-button>
-            <a-popconfirm title="确认删除？" @confirm="handleDelete(record.roleId)">
-              <a-button type="link" danger size="small">删除</a-button>
-            </a-popconfirm>
+            <div class="table-actions">
+              <a-button type="link" size="small" @click="openDialog(record)">
+                <template #icon><EditOutlined /></template>
+                编辑
+              </a-button>
+              <a-button type="link" size="small" @click="openDataScopeDialog(record)">
+                <template #icon><SafetyCertificateOutlined /></template>
+                数据权限
+              </a-button>
+              <a-button type="link" size="small" @click="openUserDialog(record)">
+                <template #icon><TeamOutlined /></template>
+                分配用户
+              </a-button>
+              <a-button type="link" size="small" @click="openMenuDialog(record)">
+                <template #icon><MenuOutlined /></template>
+                绑定菜单
+              </a-button>
+              <a-popconfirm title="确认删除？" @confirm="handleDelete(record.roleId)">
+                <a-button type="link" danger size="small">
+                  <template #icon><DeleteOutlined /></template>
+                  删除
+                </a-button>
+              </a-popconfirm>
+            </div>
           </template>
         </template>
       </a-table>
@@ -54,27 +88,52 @@
       </a-spin>
     </a-modal>
 
-    <a-modal v-model:open="dataScopeDialogVisible" :title="`数据权限 - ${currentRoleName || ''}`" @ok="handleDataScopeSubmit">
+    <a-modal
+      v-model:open="dataScopeDialogVisible"
+      :title="`数据权限 - ${currentRoleName || ''}`"
+      width="680px"
+      :confirm-loading="dataScopeSubmitting"
+      @ok="handleDataScopeSubmit"
+    >
       <a-spin :spinning="dataScopeLoading">
         <a-form :label-col="{ span: 5 }">
           <a-form-item label="权限范围">
-            <a-radio-group v-model:value="dataScopeValue">
-              <a-radio :value="1">全部数据权限</a-radio>
-              <a-radio :value="2">本部门及以下</a-radio>
-              <a-radio :value="3">本部门</a-radio>
-              <a-radio :value="4">仅本人</a-radio>
-              <a-radio :value="5">自定义</a-radio>
+            <a-radio-group v-model:value="dataScopeValue" class="data-scope-options">
+              <a-radio v-for="item in dataScopeOptions" :key="item.value" :value="item.value">
+                <span class="data-scope-option">
+                  <span class="data-scope-option-title">{{ item.label }}</span>
+                  <span class="data-scope-option-desc">{{ item.description }}</span>
+                </span>
+              </a-radio>
             </a-radio-group>
           </a-form-item>
           <a-form-item v-if="dataScopeValue === 5" label="选择部门">
-            <a-tree
-              checkable
-              default-expand-all
-              :tree-data="deptTree"
-              :field-names="{ title: 'deptName', key: 'deptId', children: 'children' }"
-              :checked-keys="checkedDeptKeys"
-              @check="onDeptCheck"
-            />
+            <div class="data-scope-tree-toolbar">
+              <a-tag color="blue">已选 {{ checkedDeptKeys.length }} 个部门</a-tag>
+              <a-space>
+                <a-button size="small" :disabled="!deptTree.length" @click="checkAllDepts">
+                  <template #icon><CheckSquareOutlined /></template>
+                  全选
+                </a-button>
+                <a-button size="small" :disabled="!checkedDeptKeys.length" @click="clearCheckedDepts">
+                  <template #icon><DeleteOutlined /></template>
+                  清空
+                </a-button>
+              </a-space>
+            </div>
+            <a-empty v-if="!deptTree.length" description="暂无部门数据" />
+            <div v-else class="data-scope-tree">
+              <a-tree
+                checkable
+                block-node
+                default-expand-all
+                :selectable="false"
+                :tree-data="deptTree"
+                :field-names="{ title: 'deptName', key: 'deptId', children: 'children' }"
+                :checked-keys="checkedDeptKeys"
+                @check="onDeptCheck"
+              />
+            </div>
           </a-form-item>
         </a-form>
       </a-spin>
@@ -100,7 +159,17 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
-import { listRole, getRole, addRole, updateRole, deleteRole, bindRoleMenus, updateRoleDataScope, getRoleUsers, assignRoleUsers, getRoleMenus } from '@/api/role'
+import {
+  CheckSquareOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  MenuOutlined,
+  PlusOutlined,
+  SafetyCertificateOutlined,
+  SearchOutlined,
+  TeamOutlined
+} from '@ant-design/icons-vue'
+import { listRole, getRole, addRole, updateRole, deleteRole, bindRoleMenus, updateRoleDataScope, getRoleUsers, assignRoleUsers, getRoleMenus, getRoleDepts } from '@/api/role'
 import { listMenu } from '@/api/menu'
 import { listDept } from '@/api/dept'
 import { listUser } from '@/api/user'
@@ -117,6 +186,7 @@ const menuTree = ref([])
 const checkedMenuKeys = ref([])
 const dataScopeDialogVisible = ref(false)
 const dataScopeLoading = ref(false)
+const dataScopeSubmitting = ref(false)
 const dataScopeValue = ref(1)
 const deptTree = ref([])
 const checkedDeptKeys = ref([])
@@ -126,6 +196,13 @@ const userTransferData = ref([])
 const selectedUserKeys = ref([])
 const query = reactive({ roleName: '' })
 const form = reactive({ roleId: null, roleName: '', roleKey: '', status: 0 })
+const dataScopeOptions = [
+  { value: 1, label: '全部数据权限', description: '可访问所有部门数据', color: 'blue' },
+  { value: 2, label: '本部门及以下', description: '当前部门和所有下级部门', color: 'cyan' },
+  { value: 3, label: '本部门', description: '仅当前用户所属部门', color: 'green' },
+  { value: 4, label: '仅本人', description: '仅当前用户自己的数据', color: 'orange' },
+  { value: 5, label: '自定义部门', description: '从部门树中指定可见范围', color: 'purple' }
+]
 const rules = {
   roleName: [{ required: true, message: '请输入角色名称' }],
   roleKey: [{ required: true, message: '请输入权限标识' }]
@@ -134,9 +211,14 @@ const columns = [
   { title: 'ID', dataIndex: 'roleId', width: 80 },
   { title: '角色名称', dataIndex: 'roleName' },
   { title: '权限标识', dataIndex: 'roleKey' },
+  { title: '数据权限', key: 'dataScope', width: 130 },
   { title: '状态', key: 'status', width: 80 },
-  { title: '操作', key: 'action', width: 320 }
+  { title: '操作', key: 'action', width: 390 }
 ]
+
+function getDataScopeMeta(value) {
+  return dataScopeOptions.find(item => item.value === Number(value)) || { label: '未配置', color: 'default' }
+}
 
 async function loadData() {
   loading.value = true
@@ -194,7 +276,33 @@ function userFilterOption(inputValue, option) {
 }
 
 function onDeptCheck(keys) {
-  checkedDeptKeys.value = Array.isArray(keys) ? keys : keys.checked
+  checkedDeptKeys.value = normalizeDeptKeys(keys)
+}
+
+function normalizeDeptKeys(keys) {
+  const rawKeys = Array.isArray(keys) ? keys : keys?.checked || []
+  return rawKeys.map(item => Number(item)).filter(item => Number.isFinite(item))
+}
+
+function flattenDeptIds(nodes, result = []) {
+  ;(nodes || []).forEach(item => {
+    if (item.deptId !== undefined && item.deptId !== null) {
+      const deptId = Number(item.deptId)
+      if (Number.isFinite(deptId)) result.push(deptId)
+    }
+    if (Array.isArray(item.children) && item.children.length) {
+      flattenDeptIds(item.children, result)
+    }
+  })
+  return result
+}
+
+function checkAllDepts() {
+  checkedDeptKeys.value = flattenDeptIds(deptTree.value)
+}
+
+function clearCheckedDepts() {
+  checkedDeptKeys.value = []
 }
 
 async function openDataScopeDialog(row) {
@@ -205,22 +313,36 @@ async function openDataScopeDialog(row) {
   dataScopeDialogVisible.value = true
   dataScopeLoading.value = true
   try {
-    const [depts, role] = await Promise.all([listDept(), getRole(row.roleId)])
+    const [depts, role, deptIds] = await Promise.all([listDept(), getRole(row.roleId), getRoleDepts(row.roleId)])
     deptTree.value = Array.isArray(depts) ? depts : depts?.records || []
-    dataScopeValue.value = role?.dataScope ?? 1
-    checkedDeptKeys.value = parseRoleDeptIds(role)
+    dataScopeValue.value = Number(role?.dataScope ?? row.dataScope ?? 1)
+    checkedDeptKeys.value = dataScopeValue.value === 5
+      ? normalizeDeptKeys(Array.isArray(deptIds) ? deptIds : parseRoleDeptIds(role))
+      : []
   } finally {
     dataScopeLoading.value = false
   }
 }
 
 async function handleDataScopeSubmit() {
-  const payload = { roleId: currentRoleId.value, dataScope: dataScopeValue.value, deptIds: checkedDeptKeys.value.map(item => Number(item)) }
+  if (dataScopeValue.value === 5 && checkedDeptKeys.value.length === 0) {
+    message.warning('请选择至少一个部门')
+    return
+  }
+
+  const payload = {
+    roleId: currentRoleId.value,
+    dataScope: dataScopeValue.value,
+    deptIds: dataScopeValue.value === 5 ? normalizeDeptKeys(checkedDeptKeys.value) : []
+  }
+  dataScopeSubmitting.value = true
   try {
     await updateRoleDataScope(payload)
   } catch (err) {
     if (err?.response?.status === 404) await updateRole(payload)
     else throw err
+  } finally {
+    dataScopeSubmitting.value = false
   }
   message.success('数据权限配置成功')
   dataScopeDialogVisible.value = false
@@ -339,3 +461,78 @@ async function handleDelete(id) {
 
 onMounted(loadData)
 </script>
+
+<style scoped>
+.data-scope-options {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.data-scope-options :deep(.ant-radio-wrapper) {
+  align-items: flex-start;
+  width: 100%;
+  margin-inline-end: 0;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.data-scope-options :deep(.ant-radio-wrapper-checked) {
+  border-color: #1677ff;
+  background: #f0f6ff;
+}
+
+.data-scope-option {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+
+.data-scope-option-title {
+  color: rgba(0, 0, 0, 0.88);
+  font-weight: 500;
+}
+
+.data-scope-option-desc {
+  margin-top: 2px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}
+
+.data-scope-tree-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.data-scope-tree {
+  max-height: 320px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+:global(html.dark) .data-scope-options :deep(.ant-radio-wrapper) {
+  border-color: #303030;
+}
+
+:global(html.dark) .data-scope-options :deep(.ant-radio-wrapper-checked) {
+  background: rgba(22, 119, 255, 0.12);
+}
+
+:global(html.dark) .data-scope-option-title {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+:global(html.dark) .data-scope-option-desc {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+:global(html.dark) .data-scope-tree {
+  border-color: #303030;
+}
+</style>

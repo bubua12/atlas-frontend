@@ -1,9 +1,9 @@
 <template>
-  <a-layout style="min-height:100vh">
+  <a-layout class="app-layout">
     <Sidebar />
     <a-layout>
       <Navbar />
-      <a-layout-content style="padding:16px;overflow-y:auto">
+      <a-layout-content class="app-content">
         <router-view />
       </a-layout-content>
     </a-layout>
@@ -14,3 +14,9 @@
 import Sidebar from './Sidebar.vue'
 import Navbar from './Navbar.vue'
 </script>
+
+<style scoped>
+.app-layout {
+  min-height: 100vh;
+}
+</style>
