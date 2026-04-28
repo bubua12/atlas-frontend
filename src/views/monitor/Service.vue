@@ -47,7 +47,7 @@
     </a-card>
 
     <!-- 详情弹窗 -->
-    <a-modal v-model:open="detailVisible" title="服务实例详情" :footer="null" width="640px">
+    <a-modal v-model:open="detailVisible" title="服务实例详情" :footer="null" width="800px">
       <a-descriptions :column="1" bordered size="small" v-if="detailData">
         <a-descriptions-item label="服务名称">{{ detailData.serviceName }}</a-descriptions-item>
         <a-descriptions-item label="聚合状态">
@@ -85,6 +85,7 @@
 import { ref, onMounted } from 'vue'
 import { ReloadOutlined } from '@ant-design/icons-vue'
 import request from '@/utils/request'
+import dayjs from 'dayjs'
 
 const loading = ref(false)
 const tableData = ref([])
@@ -100,10 +101,14 @@ const columns = [
 ]
 
 const instanceColumns = [
-  { title: '实例ID', dataIndex: 'instanceId', width: 220, ellipsis: true },
+  { title: '实例ID', dataIndex: 'instanceId', width: 180, ellipsis: true },
   { title: '状态', key: 'status', width: 80, align: 'center' },
   { title: '服务地址', dataIndex: 'serviceUrl', width: 250, ellipsis: true },
-  { title: '注册时间', dataIndex: 'registrationTime', width: 170 }
+  { title: '注册时间', dataIndex: 'registrationTime', width: 210,
+    customRender: ({ text }) => {
+      return dayjs(text).format('YYYY-MM-DD HH:mm:ss')
+    }
+  }
 ]
 
 async function loadData() {
