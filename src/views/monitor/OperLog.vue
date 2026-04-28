@@ -12,28 +12,37 @@
         </a-button>
       </div>
 
-      <!-- 搜索条件 -->
-      <a-form layout="inline" style="margin-bottom: 16px">
-        <a-form-item label="操作标题">
-          <a-input v-model:value="query.title" placeholder="请输入" allow-clear style="width: 160px" />
-        </a-form-item>
-        <a-form-item label="操作人员">
-          <a-input v-model:value="query.operName" placeholder="请输入" allow-clear style="width: 140px" />
-        </a-form-item>
-        <a-form-item label="状态">
-          <a-select v-model:value="query.status" placeholder="全部" allow-clear style="width: 100px">
+      <div class="operlog-filter">
+        <label class="filter-item">
+          <span>操作标题</span>
+          <a-input v-model:value="query.title" class="filter-control" placeholder="请输入" allow-clear @press-enter="handleSearch" />
+        </label>
+        <label class="filter-item">
+          <span>操作人员</span>
+          <a-input v-model:value="query.operName" class="filter-control" placeholder="请输入" allow-clear @press-enter="handleSearch" />
+        </label>
+        <label class="filter-item status-filter">
+          <span>状态</span>
+          <a-select v-model:value="query.status" class="filter-control" placeholder="全部" allow-clear>
             <a-select-option :value="0">成功</a-select-option>
             <a-select-option :value="1">失败</a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item label="操作时间">
-          <a-range-picker v-model:value="dateRange" show-time style="width: 360px" />
-        </a-form-item>
-        <a-form-item>
-          <a-button type="primary" @click="handleSearch">查询</a-button>
-          <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
-        </a-form-item>
-      </a-form>
+        </label>
+        <label class="filter-item time-filter">
+          <span>操作时间</span>
+          <a-range-picker v-model:value="dateRange" class="filter-control" show-time />
+        </label>
+        <div class="filter-actions">
+          <a-button type="primary" @click="handleSearch">
+            <template #icon><SearchOutlined /></template>
+            查询
+          </a-button>
+          <a-button @click="handleReset">
+            <template #icon><UndoOutlined /></template>
+            重置
+          </a-button>
+        </div>
+      </div>
 
       <a-table
         :columns="columns"
@@ -51,10 +60,12 @@
             </a-tag>
           </template>
           <template v-if="column.key === 'action'">
-            <a-button type="link" size="small" @click="handleDetail(record)">详情</a-button>
-            <a-popconfirm title="确认删除？" @confirm="handleDelete(record.operId)">
-              <a-button type="link" danger size="small">删除</a-button>
-            </a-popconfirm>
+            <div class="table-actions">
+              <a-button type="link" size="small" @click="handleDetail(record)">详情</a-button>
+              <a-popconfirm title="确认删除？" @confirm="handleDelete(record.operId)">
+                <a-button type="link" danger size="small">删除</a-button>
+              </a-popconfirm>
+            </div>
           </template>
         </template>
       </a-table>
@@ -162,7 +173,9 @@ import {
   CloseCircleOutlined,
   CodeOutlined,
   FileTextOutlined,
-  ReloadOutlined
+  ReloadOutlined,
+  SearchOutlined,
+  UndoOutlined
 } from '@ant-design/icons-vue'
 import request from '@/utils/request'
 
@@ -317,6 +330,48 @@ onMounted(loadData)
 </script>
 
 <style scoped>
+.operlog-filter {
+  display: grid;
+  grid-template-columns:
+    minmax(170px, 0.8fr)
+    minmax(160px, 0.7fr)
+    minmax(120px, 0.48fr)
+    minmax(320px, 1.5fr)
+    auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-bg-soft);
+}
+
+.filter-item {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--app-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.filter-control {
+  width: 100% !important;
+}
+
+.filter-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.filter-actions .ant-btn {
+  min-width: 78px;
+}
+
 .detail-modal-title {
   display: flex;
   align-items: center;
@@ -562,6 +617,10 @@ onMounted(loadData)
     #141820;
 }
 
+:global(html.dark) .operlog-filter {
+  background: #141820;
+}
+
 :global(html.dark) .detail-cost,
 :global(html.dark) .detail-section-title .anticon {
   color: #76a7ff;
@@ -578,6 +637,14 @@ onMounted(loadData)
 }
 
 @media (max-width: 760px) {
+  .operlog-filter {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    justify-content: flex-start;
+  }
+
   .detail-hero {
     flex-direction: column;
   }

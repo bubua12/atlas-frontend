@@ -108,11 +108,13 @@ html.dark body, html.dark {
 .table-actions {
   display: inline-flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 4px;
+  white-space: nowrap;
 }
 
 .table-actions .ant-btn {
+  flex: 0 0 auto;
   padding-inline: 4px;
 }
 
