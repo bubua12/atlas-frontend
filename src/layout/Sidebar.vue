@@ -58,8 +58,21 @@ const router = useRouter()
 
 <style scoped>
 .app-sider {
+  position: fixed !important;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  height: 100vh;
+  overflow-y: auto;
   box-shadow: 1px 0 8px rgba(15, 23, 42, 0.12);
   background: var(--app-sidebar) !important;
+}
+
+.app-sider :deep(.ant-layout-sider-children) {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
 }
 
 .brand {
@@ -96,6 +109,7 @@ const router = useRouter()
 }
 
 .side-menu {
+  flex: 1;
   border-inline-end: 0;
   background: var(--app-sidebar);
 }

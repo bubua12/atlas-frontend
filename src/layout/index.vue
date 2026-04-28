@@ -1,7 +1,7 @@
 <template>
   <a-layout class="app-layout">
     <Sidebar />
-    <a-layout>
+    <a-layout class="main-layout">
       <Navbar />
       <a-layout-content class="app-content">
         <router-view />
@@ -18,5 +18,11 @@ import Navbar from './Navbar.vue'
 <style scoped>
 .app-layout {
   min-height: 100vh;
+}
+
+.main-layout {
+  min-width: 0;
+  min-height: 100vh;
+  margin-left: 220px;
 }
 </style>

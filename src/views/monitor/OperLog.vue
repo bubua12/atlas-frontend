@@ -274,8 +274,8 @@ async function loadData() {
   loading.value = true
   try {
     if (dateRange.value && dateRange.value.length === 2) {
-      query.beginTime = dateRange.value[0].format('YYYY-MM-DD HH:mm:ss')
-      query.endTime = dateRange.value[1].format('YYYY-MM-DD HH:mm:ss')
+      query.beginTime = dateRange.value[0].format('YYYY-MM-DDTHH:mm:ss')
+      query.endTime = dateRange.value[1].format('YYYY-MM-DDTHH:mm:ss')
     } else {
       query.beginTime = ''
       query.endTime = ''

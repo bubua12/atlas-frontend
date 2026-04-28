@@ -10,9 +10,18 @@ const request = axios.create({
 
 request.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
-  if (token) config.headers.Authorization = token
+  if (token && !isPublicAuthRequest(config.url)) config.headers.Authorization = token
   return config
 })
+
+function isPublicAuthRequest(url = '') {
+  return [
+    '/auth/login',
+    '/auth/captcha',
+    '/auth/register',
+    '/auth/wecom/config'
+  ].some(path => url.startsWith(path))
+}
 
 request.interceptors.response.use(
   res => {
