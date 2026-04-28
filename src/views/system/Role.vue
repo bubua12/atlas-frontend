@@ -474,13 +474,14 @@ onMounted(loadData)
   width: 100%;
   margin-inline-end: 0;
   padding: 8px 10px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--app-border);
   border-radius: 6px;
+  background: var(--app-panel);
 }
 
 .data-scope-options :deep(.ant-radio-wrapper-checked) {
-  border-color: #1677ff;
-  background: #f0f6ff;
+  border-color: #4f8cff;
+  background: var(--app-primary-soft);
 }
 
 .data-scope-option {
@@ -490,13 +491,13 @@ onMounted(loadData)
 }
 
 .data-scope-option-title {
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--app-text);
   font-weight: 500;
 }
 
 .data-scope-option-desc {
   margin-top: 2px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--app-text-muted);
   font-size: 12px;
 }
 
@@ -512,27 +513,8 @@ onMounted(loadData)
   max-height: 320px;
   overflow: auto;
   padding: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--app-border);
   border-radius: 6px;
-}
-
-:global(html.dark) .data-scope-options :deep(.ant-radio-wrapper) {
-  border-color: #303030;
-}
-
-:global(html.dark) .data-scope-options :deep(.ant-radio-wrapper-checked) {
-  background: rgba(22, 119, 255, 0.12);
-}
-
-:global(html.dark) .data-scope-option-title {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-:global(html.dark) .data-scope-option-desc {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-:global(html.dark) .data-scope-tree {
-  border-color: #303030;
+  background: var(--app-bg-soft);
 }
 </style>

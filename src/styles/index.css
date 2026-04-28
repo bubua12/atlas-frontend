@@ -2,20 +2,53 @@ body, html {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: #f5f7fa;
-  color: #333;
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+:root {
+  --app-bg: #f5f7fa;
+  --app-bg-soft: #fafbfc;
+  --app-panel: #ffffff;
+  --app-panel-raised: #ffffff;
+  --app-border: #edf0f5;
+  --app-border-strong: #d9dee8;
+  --app-text: rgba(0, 0, 0, 0.88);
+  --app-text-secondary: rgba(0, 0, 0, 0.65);
+  --app-text-muted: rgba(0, 0, 0, 0.45);
+  --app-primary-soft: #f0f6ff;
+  --app-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --app-sidebar: #111318;
+  --app-sidebar-brand: #1a1f2b;
+  --app-sidebar-selected: #1f4fbf;
 }
 
 html.dark body, html.dark {
-  background: #141414;
-  color: rgba(255, 255, 255, 0.85);
+  --app-bg: #101114;
+  --app-bg-soft: #14171d;
+  --app-panel: #171a20;
+  --app-panel-raised: #1b1f27;
+  --app-border: #242a35;
+  --app-border-strong: #343c4a;
+  --app-text: rgba(255, 255, 255, 0.88);
+  --app-text-secondary: rgba(255, 255, 255, 0.66);
+  --app-text-muted: rgba(255, 255, 255, 0.44);
+  --app-primary-soft: rgba(79, 140, 255, 0.14);
+  --app-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  --app-sidebar: #111318;
+  --app-sidebar-brand: #0d0f14;
+  --app-sidebar-selected: #1f4fbf;
+  background: var(--app-bg);
+  color: var(--app-text);
 }
 
 .app-content {
   min-height: calc(100vh - 56px);
   padding: 20px;
   overflow-y: auto;
-  background: #f5f7fa;
+  background:
+    radial-gradient(circle at top right, rgba(79, 140, 255, 0.08), transparent 320px),
+    var(--app-bg);
 }
 
 .page-shell {
@@ -26,8 +59,9 @@ html.dark body, html.dark {
 
 .page-panel.ant-card {
   border-radius: 8px;
-  border: 1px solid #edf0f5;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--app-border);
+  background: var(--app-panel);
+  box-shadow: var(--app-shadow);
 }
 
 .page-panel .ant-card-body {
@@ -55,7 +89,7 @@ html.dark body, html.dark {
 
 .page-title {
   margin: 0;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--app-text);
   font-size: 18px;
   font-weight: 600;
   line-height: 1.4;
@@ -63,7 +97,7 @@ html.dark body, html.dark {
 
 .page-subtitle {
   margin-top: 2px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--app-text-muted);
   font-size: 12px;
 }
 
@@ -88,7 +122,7 @@ html.dark body, html.dark {
 }
 
 .muted-text {
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--app-text-muted);
 }
 
 .split-layout {
@@ -115,14 +149,14 @@ html.dark body, html.dark {
 
 .panel-heading-title {
   margin: 0;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--app-text);
   font-size: 15px;
   font-weight: 600;
 }
 
 .panel-heading-desc {
   margin-top: 2px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--app-text-muted);
   font-size: 12px;
 }
 
@@ -135,8 +169,9 @@ html.dark body, html.dark {
 .selection-list .ant-checkbox-wrapper {
   margin-inline-start: 0;
   padding: 6px 10px;
-  border: 1px solid #edf0f5;
+  border: 1px solid var(--app-border);
   border-radius: 6px;
+  background: var(--app-panel);
 }
 
 .tree-panel {
@@ -145,37 +180,87 @@ html.dark body, html.dark {
 }
 
 .ant-table-wrapper .ant-table-thead > tr > th {
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--app-text-secondary);
   font-weight: 600;
-  background: #fafbfc;
+  background: var(--app-bg-soft);
 }
 
 .ant-table-wrapper .ant-table-tbody > tr > td {
-  border-bottom-color: #f0f2f5;
-}
-
-html.dark .app-content {
-  background: #141414;
+  border-bottom-color: var(--app-border);
 }
 
 html.dark .page-panel.ant-card {
-  border-color: #303030;
-  box-shadow: none;
+  box-shadow: var(--app-shadow);
 }
 
-html.dark .page-title,
-html.dark .panel-heading-title {
-  color: rgba(255, 255, 255, 0.85);
+html.dark .ant-card,
+html.dark .ant-modal-content,
+html.dark .ant-modal-header,
+html.dark .ant-drawer-content,
+html.dark .ant-popover-inner,
+html.dark .ant-dropdown-menu {
+  background: var(--app-panel);
 }
 
-html.dark .page-subtitle,
-html.dark .panel-heading-desc,
-html.dark .muted-text {
-  color: rgba(255, 255, 255, 0.45);
+html.dark .ant-input,
+html.dark .ant-input-affix-wrapper,
+html.dark .ant-input-number,
+html.dark .ant-select-selector,
+html.dark .ant-picker {
+  border-color: var(--app-border-strong) !important;
+  background: #12151b !important;
+}
+
+html.dark .ant-input:hover,
+html.dark .ant-input-affix-wrapper:hover,
+html.dark .ant-input-number:hover,
+html.dark .ant-select-selector:hover,
+html.dark .ant-picker:hover {
+  border-color: #4f8cff !important;
+}
+
+html.dark .ant-table-wrapper .ant-table {
+  background: var(--app-panel);
+}
+
+html.dark .ant-table-wrapper .ant-table-tbody > tr.ant-table-row:hover > td,
+html.dark .ant-table-wrapper .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+  background: #202631;
+}
+
+html.dark .ant-table-wrapper .ant-table-thead > tr > th {
+  border-bottom-color: var(--app-border);
+}
+
+html.dark .ant-table-wrapper .ant-table-container,
+html.dark .ant-table-wrapper .ant-table-cell {
+  border-color: var(--app-border);
+}
+
+html.dark .ant-table-row-selected > td {
+  background: rgba(79, 140, 255, 0.16) !important;
 }
 
 html.dark .selection-list .ant-checkbox-wrapper {
-  border-color: #303030;
+  background: #141820;
+}
+
+html.dark .ant-btn-default {
+  border-color: var(--app-border-strong);
+  background: #181c24;
+}
+
+html.dark .ant-btn-default:not(:disabled):hover {
+  border-color: #4f8cff;
+  color: #76a7ff;
+}
+
+html.dark .ant-descriptions-bordered .ant-descriptions-item-label {
+  background: #1d222b;
+}
+
+html.dark .ant-tree {
+  background: transparent;
 }
 
 @media (max-width: 900px) {

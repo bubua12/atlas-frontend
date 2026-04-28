@@ -40,7 +40,7 @@ const userStore = useUserStore()
 const themeStore = useThemeStore()
 
 const headerStyle = computed(() => ({
-  background: themeStore.isDark ? '#141414' : '#fff',
+  background: themeStore.isDark ? 'var(--app-panel)' : '#fff',
   padding: '0 20px',
   height: '56px',
   display: 'flex',
@@ -65,7 +65,7 @@ function handleLogout() {
 }
 
 .header-title {
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--app-text);
   font-size: 16px;
   font-weight: 600;
   line-height: 1.2;
@@ -73,7 +73,7 @@ function handleLogout() {
 
 .header-subtitle {
   margin-top: 2px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--app-text-muted);
   font-size: 12px;
   line-height: 1.2;
 }
@@ -88,11 +88,8 @@ function handleLogout() {
   min-width: 96px;
 }
 
-:global(html.dark) .header-title {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-:global(html.dark) .header-subtitle {
-  color: rgba(255, 255, 255, 0.45);
+:global(html.dark) .app-header {
+  border-bottom: 1px solid var(--app-border);
+  box-shadow: none;
 }
 </style>

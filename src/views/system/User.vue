@@ -25,9 +25,11 @@
           <template v-if="column.key === 'status'">
             <a-tag class="status-tag" :color="record.status === 0 ? 'green' : 'red'">{{ record.status === 0 ? '正常' : '停用' }}</a-tag>
           </template>
-          <template v-if="column.key === 'contact'">
-            <div>{{ record.email || '-' }}</div>
-            <div class="muted-text">{{ record.phone || '-' }}</div>
+          <template v-if="column.key === 'email'">
+            <span :class="{ 'muted-text': !record.email }">{{ record.email || '-' }}</span>
+          </template>
+          <template v-if="column.key === 'phone'">
+            <span :class="{ 'muted-text': !record.phone }">{{ record.phone || '-' }}</span>
           </template>
           <template v-if="column.key === 'action'">
             <div class="table-actions">
@@ -125,7 +127,8 @@ const columns = [
   { title: 'ID', dataIndex: 'userId', width: 80 },
   { title: '用户名', dataIndex: 'username' },
   { title: '昵称', dataIndex: 'nickname' },
-  { title: '联系方式', key: 'contact' },
+  { title: '邮箱', key: 'email', dataIndex: 'email' },
+  { title: '手机号', key: 'phone', dataIndex: 'phone', width: 140 },
   { title: '状态', key: 'status', width: 80 },
   { title: '操作', key: 'action', width: 240 }
 ]

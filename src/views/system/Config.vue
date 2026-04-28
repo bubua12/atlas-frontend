@@ -203,7 +203,7 @@ onMounted(() => {
 }
 
 .config-nav {
-  border-right: 1px solid #edf0f5;
+  border-right: 1px solid var(--app-border);
   padding-right: 16px;
 }
 
@@ -213,10 +213,6 @@ onMounted(() => {
 
 .config-content {
   max-width: 720px;
-}
-
-:global(html.dark) .config-nav {
-  border-right-color: #303030;
 }
 
 @media (max-width: 900px) {

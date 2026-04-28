@@ -27,10 +27,10 @@ import { ApartmentOutlined, MenuOutlined, TeamOutlined, UserOutlined } from '@an
 
 const userStore = useUserStore()
 const cards = [
-  { title: '用户数', value: '--', color: '#1677ff', background: '#e6f4ff', icon: UserOutlined },
-  { title: '角色数', value: '--', color: '#52c41a', background: '#f0fbe8', icon: TeamOutlined },
-  { title: '菜单数', value: '--', color: '#faad14', background: '#fff7e6', icon: MenuOutlined },
-  { title: '部门数', value: '--', color: '#ff4d4f', background: '#fff1f0', icon: ApartmentOutlined }
+  { title: '用户数', value: '--', color: '#4f8cff', background: 'rgba(79, 140, 255, 0.14)', icon: UserOutlined },
+  { title: '角色数', value: '--', color: '#63d685', background: 'rgba(99, 214, 133, 0.14)', icon: TeamOutlined },
+  { title: '菜单数', value: '--', color: '#f6b74b', background: 'rgba(246, 183, 75, 0.16)', icon: MenuOutlined },
+  { title: '部门数', value: '--', color: '#ff7875', background: 'rgba(255, 120, 117, 0.14)', icon: ApartmentOutlined }
 ]
 </script>
 

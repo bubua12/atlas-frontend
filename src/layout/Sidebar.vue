@@ -55,6 +55,7 @@ const router = useRouter()
 <style scoped>
 .app-sider {
   box-shadow: 1px 0 8px rgba(15, 23, 42, 0.12);
+  background: var(--app-sidebar) !important;
 }
 
 .brand {
@@ -64,7 +65,7 @@ const router = useRouter()
   height: 56px;
   padding: 0 18px;
   color: #fff;
-  background: #1f2a3a;
+  background: var(--app-sidebar-brand);
 }
 
 .brand-mark {
@@ -73,7 +74,7 @@ const router = useRouter()
   height: 30px;
   place-items: center;
   border-radius: 8px;
-  background: #1677ff;
+  background: #4f8cff;
   font-weight: 700;
 }
 
@@ -92,5 +93,6 @@ const router = useRouter()
 
 .side-menu {
   border-inline-end: 0;
+  background: var(--app-sidebar);
 }
 </style>
