@@ -26,7 +26,9 @@
         <template #icon><DesktopOutlined /></template>
         <template #title>系统监控</template>
         <a-menu-item key="/monitor/server"><template #icon><CloudServerOutlined /></template>服务监控</a-menu-item>
+        <a-menu-item key="/monitor/service"><template #icon><ClusterOutlined /></template>服务状态</a-menu-item>
         <a-menu-item key="/monitor/online"><template #icon><UsergroupAddOutlined /></template>在线用户</a-menu-item>
+        <a-menu-item key="/monitor/operlog"><template #icon><FileTextOutlined /></template>操作日志</a-menu-item>
       </a-sub-menu>
     </a-menu>
   </a-layout-sider>
@@ -37,8 +39,10 @@ import { useRoute, useRouter } from 'vue-router'
 import {
   ApartmentOutlined,
   BookOutlined,
+  ClusterOutlined,
   CloudServerOutlined,
   DesktopOutlined,
+  FileTextOutlined,
   HomeOutlined,
   MenuOutlined,
   SettingOutlined,

@@ -15,7 +15,9 @@ const routes = [
       { path: 'system/dict', component: () => import('@/views/system/Dict.vue'), meta: { title: '字典管理' } },
       { path: 'system/config', component: () => import('@/views/system/Config.vue'), meta: { title: '系统设置' } },
       { path: 'monitor/server', component: () => import('@/views/monitor/Server.vue'), meta: { title: '服务监控' } },
-      { path: 'monitor/online', component: () => import('@/views/monitor/Online.vue'), meta: { title: '在线用户' } }
+      { path: 'monitor/online', component: () => import('@/views/monitor/Online.vue'), meta: { title: '在线用户' } },
+      { path: 'monitor/service', component: () => import('@/views/monitor/Service.vue'), meta: { title: '服务状态' } },
+      { path: 'monitor/operlog', component: () => import('@/views/monitor/OperLog.vue'), meta: { title: '操作日志' } }
     ]
   }
 ]
