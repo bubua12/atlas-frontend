@@ -46,7 +46,12 @@
                     <h3>密码校验规则</h3>
                     <p>控制新密码必须满足的复杂度要求</p>
                   </div>
-                  <a-tag color="blue">已启用</a-tag>
+                  <div class="setting-section-actions">
+                    <a-tag :color="passwordForm['password.enabled'] ? 'processing' : 'default'">
+                      {{ passwordForm['password.enabled'] ? '已启用' : '未启用' }}
+                    </a-tag>
+                    <a-switch v-model:checked="passwordForm['password.enabled']" />
+                  </div>
                 </div>
 
                 <div class="setting-field">
@@ -55,17 +60,42 @@
                     <small>建议不少于 8 位</small>
                   </div>
                   <div class="setting-control has-unit">
-                    <a-input-number v-model:value="passwordForm['password.min.length']" :min="6" :max="20" />
+                    <a-input-number
+                      v-model:value="passwordForm['password.min.length']"
+                      :min="6"
+                      :max="20"
+                      :disabled="!passwordForm['password.enabled']"
+                    />
                     <span>位</span>
                   </div>
                 </div>
 
                 <div class="setting-group-title">组成规则</div>
                 <div class="setting-check-grid">
-                  <a-checkbox v-model:checked="passwordForm['password.require.number']">数字</a-checkbox>
-                  <a-checkbox v-model:checked="passwordForm['password.require.lowercase']">小写字母</a-checkbox>
-                  <a-checkbox v-model:checked="passwordForm['password.require.uppercase']">大写字母</a-checkbox>
-                  <a-checkbox v-model:checked="passwordForm['password.require.special']">特殊字符</a-checkbox>
+                  <a-checkbox
+                    v-model:checked="passwordForm['password.require.number']"
+                    :disabled="!passwordForm['password.enabled']"
+                  >
+                    数字
+                  </a-checkbox>
+                  <a-checkbox
+                    v-model:checked="passwordForm['password.require.lowercase']"
+                    :disabled="!passwordForm['password.enabled']"
+                  >
+                    小写字母
+                  </a-checkbox>
+                  <a-checkbox
+                    v-model:checked="passwordForm['password.require.uppercase']"
+                    :disabled="!passwordForm['password.enabled']"
+                  >
+                    大写字母
+                  </a-checkbox>
+                  <a-checkbox
+                    v-model:checked="passwordForm['password.require.special']"
+                    :disabled="!passwordForm['password.enabled']"
+                  >
+                    特殊字符
+                  </a-checkbox>
                 </div>
               </section>
 
@@ -76,16 +106,27 @@
                     <p>保存后注册、重置密码等场景将按此规则校验</p>
                   </div>
                 </div>
-                <div class="policy-summary">
-                  <div class="policy-summary-number">{{ passwordForm['password.min.length'] || '-' }}</div>
+                <div class="policy-summary" :class="{ disabled: !passwordForm['password.enabled'] }">
+                  <div class="policy-summary-number">
+                    {{ passwordForm['password.enabled'] ? (passwordForm['password.min.length'] || '-') : '--' }}
+                  </div>
                   <div>
-                    <div class="policy-summary-title">最小密码长度</div>
-                    <div class="policy-summary-desc">当前已启用 {{ activePasswordRules.length }} 项复杂度规则</div>
+                    <div class="policy-summary-title">
+                      {{ passwordForm['password.enabled'] ? '最小密码长度' : '密码策略未启用' }}
+                    </div>
+                    <div class="policy-summary-desc">
+                      {{ passwordForm['password.enabled']
+                        ? `当前已启用 ${activePasswordRules.length} 项复杂度规则`
+                        : '保存后密码复杂度规则将不参与校验' }}
+                    </div>
                   </div>
                 </div>
                 <div class="policy-tags">
-                  <a-tag v-for="tag in activePasswordRules" :key="tag" color="processing">{{ tag }}</a-tag>
-                  <span v-if="!activePasswordRules.length" class="muted-text">暂未启用复杂度规则</span>
+                  <template v-if="passwordForm['password.enabled']">
+                    <a-tag v-for="tag in activePasswordRules" :key="tag" color="processing">{{ tag }}</a-tag>
+                    <span v-if="!activePasswordRules.length" class="muted-text">暂未启用复杂度规则</span>
+                  </template>
+                  <span v-else class="muted-text">密码策略总开关已关闭</span>
                 </div>
               </section>
             </template>
@@ -97,6 +138,12 @@
                     <h3>登录保护</h3>
                     <p>配置在线会话数量、失败次数和锁定时长</p>
                   </div>
+                  <div class="setting-section-actions">
+                    <a-tag :color="accountForm['account.enabled'] ? 'processing' : 'default'">
+                      {{ accountForm['account.enabled'] ? '已启用' : '未启用' }}
+                    </a-tag>
+                    <a-switch v-model:checked="accountForm['account.enabled']" />
+                  </div>
                 </div>
 
                 <div class="setting-field">
@@ -105,7 +152,12 @@
                     <small>超过阈值后限制新的会话</small>
                   </div>
                   <div class="setting-control has-unit">
-                    <a-input-number v-model:value="accountForm['account.online.threshold']" :min="1" :max="10" />
+                    <a-input-number
+                      v-model:value="accountForm['account.online.threshold']"
+                      :min="1"
+                      :max="10"
+                      :disabled="!accountForm['account.enabled']"
+                    />
                     <span>个</span>
                   </div>
                 </div>
@@ -115,7 +167,12 @@
                     <small>单个 IP 在锁定周期内允许的失败次数</small>
                   </div>
                   <div class="setting-control has-unit">
-                    <a-input-number v-model:value="accountForm['account.ip.fail.max']" :min="3" :max="20" />
+                    <a-input-number
+                      v-model:value="accountForm['account.ip.fail.max']"
+                      :min="3"
+                      :max="20"
+                      :disabled="!accountForm['account.enabled']"
+                    />
                     <span>次</span>
                   </div>
                 </div>
@@ -125,7 +182,12 @@
                     <small>单个账号在锁定周期内允许的失败次数</small>
                   </div>
                   <div class="setting-control has-unit">
-                    <a-input-number v-model:value="accountForm['account.account.fail.max']" :min="3" :max="20" />
+                    <a-input-number
+                      v-model:value="accountForm['account.account.fail.max']"
+                      :min="3"
+                      :max="20"
+                      :disabled="!accountForm['account.enabled']"
+                    />
                     <span>次</span>
                   </div>
                 </div>
@@ -135,7 +197,12 @@
                     <small>触发保护后的账号冻结时间</small>
                   </div>
                   <div class="setting-control has-unit">
-                    <a-input-number v-model:value="accountForm['account.lock.duration']" :min="5" :max="1440" />
+                    <a-input-number
+                      v-model:value="accountForm['account.lock.duration']"
+                      :min="5"
+                      :max="1440"
+                      :disabled="!accountForm['account.enabled']"
+                    />
                     <span>分钟</span>
                   </div>
                 </div>
@@ -149,20 +216,20 @@
                   </div>
                 </div>
                 <div class="account-stat-list">
-                  <div class="account-stat">
-                    <span>{{ accountForm['account.online.threshold'] || '-' }}</span>
+                  <div class="account-stat" :class="{ disabled: !accountForm['account.enabled'] }">
+                    <span>{{ accountForm['account.enabled'] ? (accountForm['account.online.threshold'] || '-') : '--' }}</span>
                     <small>同用户在线阈值</small>
                   </div>
-                  <div class="account-stat">
-                    <span>{{ accountForm['account.ip.fail.max'] || '-' }}</span>
+                  <div class="account-stat" :class="{ disabled: !accountForm['account.enabled'] }">
+                    <span>{{ accountForm['account.enabled'] ? (accountForm['account.ip.fail.max'] || '-') : '--' }}</span>
                     <small>IP 失败次数</small>
                   </div>
-                  <div class="account-stat">
-                    <span>{{ accountForm['account.account.fail.max'] || '-' }}</span>
+                  <div class="account-stat" :class="{ disabled: !accountForm['account.enabled'] }">
+                    <span>{{ accountForm['account.enabled'] ? (accountForm['account.account.fail.max'] || '-') : '--' }}</span>
                     <small>账号失败次数</small>
                   </div>
-                  <div class="account-stat">
-                    <span>{{ accountForm['account.lock.duration'] || '-' }}</span>
+                  <div class="account-stat" :class="{ disabled: !accountForm['account.enabled'] }">
+                    <span>{{ accountForm['account.enabled'] ? (accountForm['account.lock.duration'] || '-') : '--' }}</span>
                     <small>锁定分钟数</small>
                   </div>
                 </div>
@@ -425,6 +492,7 @@ const settingNav = [
 const activeNav = computed(() => settingNav.find(item => item.key === activeType.value) || settingNav[0])
 const activePasswordRules = computed(() => {
   const form = passwordForm.value
+  if (!form['password.enabled']) return []
   const rules = []
   if (form['password.require.number']) rules.push('数字')
   if (form['password.require.lowercase']) rules.push('小写字母')
@@ -467,9 +535,9 @@ const loadConfig = async (configType) => {
     })
 
     if (configType === 'PASSWORD') {
-      passwordForm.value = formData
+      passwordForm.value = normalizePasswordForm(formData)
     } else if (configType === 'ACCOUNT') {
-      accountForm.value = formData
+      accountForm.value = normalizeAccountForm(formData)
     } else if (configType === 'WATERMARK') {
       watermarkForm.value = normalizeWatermarkForm(formData)
     }
@@ -489,6 +557,20 @@ const parseValue = (value) => {
   return value
 }
 
+const normalizeBooleanValue = (value, defaultValue = false) => {
+  if (typeof value === 'boolean') return value
+  if (value === 'true') return true
+  if (value === 'false') return false
+  if (value === null || value === undefined || value === '') return defaultValue
+  return Boolean(value)
+}
+
+const normalizeIntegerRange = (value, defaultValue, min, max) => {
+  const numberValue = Number(value)
+  if (Number.isNaN(numberValue)) return defaultValue
+  return Math.min(max, Math.max(min, Math.round(numberValue)))
+}
+
 const normalizeText = (value) => {
   const text = typeof value === 'string' ? value.trim() : ''
   return text || 'Atlas System'
@@ -499,6 +581,25 @@ const normalizeOpacity = (value) => {
   if (Number.isNaN(opacity)) return 0.1
   return Math.min(1, Math.max(0, opacity))
 }
+
+// 密码设置总开关默认开启，兼容旧库缺少 password.enabled 的场景。
+const normalizePasswordForm = (formData = {}) => ({
+  'password.enabled': normalizeBooleanValue(formData['password.enabled'], true),
+  'password.min.length': normalizeIntegerRange(formData['password.min.length'], 8, 6, 20),
+  'password.require.uppercase': normalizeBooleanValue(formData['password.require.uppercase'], true),
+  'password.require.lowercase': normalizeBooleanValue(formData['password.require.lowercase'], true),
+  'password.require.number': normalizeBooleanValue(formData['password.require.number'], true),
+  'password.require.special': normalizeBooleanValue(formData['password.require.special'], false)
+})
+
+// 账号保护总开关默认开启；关闭后后端不再应用登录锁定和在线阈值。
+const normalizeAccountForm = (formData = {}) => ({
+  'account.enabled': normalizeBooleanValue(formData['account.enabled'], true),
+  'account.online.threshold': normalizeIntegerRange(formData['account.online.threshold'], 1, 1, 10),
+  'account.ip.fail.max': normalizeIntegerRange(formData['account.ip.fail.max'], 5, 3, 20),
+  'account.account.fail.max': normalizeIntegerRange(formData['account.account.fail.max'], 5, 3, 20),
+  'account.lock.duration': normalizeIntegerRange(formData['account.lock.duration'], 30, 5, 1440)
+})
 
 // 水印表单保存和预览前都走同一套归一化，保证提交值落在后端允许范围内。
 const normalizeWatermarkForm = (formData = {}) => ({
@@ -579,9 +680,13 @@ const handleSave = async (configType) => {
   try {
     let formData = {}
     if (configType === 'PASSWORD') {
-      formData = passwordForm.value
+      const normalizedForm = normalizePasswordForm(passwordForm.value)
+      passwordForm.value = normalizedForm
+      formData = normalizedForm
     } else if (configType === 'ACCOUNT') {
-      formData = accountForm.value
+      const normalizedForm = normalizeAccountForm(accountForm.value)
+      accountForm.value = normalizedForm
+      formData = normalizedForm
     } else if (configType === 'WATERMARK') {
       const normalizedForm = normalizeWatermarkForm(watermarkForm.value)
       if (
@@ -1066,6 +1171,10 @@ onMounted(() => {
   background: var(--app-bg-soft);
 }
 
+.policy-summary.disabled {
+  opacity: 0.72;
+}
+
 .policy-summary-number {
   display: flex;
   align-items: center;
@@ -1117,6 +1226,14 @@ onMounted(() => {
   font-size: 24px;
   font-weight: 800;
   line-height: 1;
+}
+
+.account-stat.disabled {
+  opacity: 0.72;
+}
+
+.account-stat.disabled span {
+  color: var(--app-text-muted);
 }
 
 .account-stat small {
