@@ -487,7 +487,7 @@ onMounted(loadData)
 }
 
 .data-scope-options :deep(.ant-radio-wrapper-checked) {
-  border-color: #4f8cff;
+  border-color: #1f4fbf;
   background: var(--app-primary-soft);
 }
 

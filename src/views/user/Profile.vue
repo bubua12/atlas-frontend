@@ -55,9 +55,6 @@
               <a-form-item label="邮箱">
                 <a-input v-model:value="form.email" placeholder="请输入邮箱" />
               </a-form-item>
-              <a-form-item label="头像地址">
-                <a-input v-model:value="form.avatar" placeholder="请输入头像 OSS 地址" />
-              </a-form-item>
               <a-form-item label="性别">
                 <a-radio-group v-model:value="form.sex">
                   <a-radio :value="1">男</a-radio>
@@ -105,7 +102,7 @@ import { message } from 'ant-design-vue'
 import { CameraOutlined, SaveOutlined } from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { getProfile, updateProfile, updateProfileAvatar, updateProfilePassword } from '@/api/user'
-import { uploadFile } from '@/api/file'
+import { uploadAvatarFile } from '@/api/file'
 
 const userStore = useUserStore()
 const activeTab = ref('info')
@@ -189,14 +186,17 @@ async function savePassword() {
 
 async function handleAvatarUpload({ file, onSuccess, onError }) {
   try {
-    const avatar = await uploadFile(file)
+    // 1. 上传头像文件到 infra 服务（归档到 avatar/ 目录）
+    const avatar = await uploadAvatarFile(file)
+    // 2. 保存头像 URL 到数据库
     await updateProfileAvatar({ avatar })
-    form.avatar = avatar
+    // 3. 重新加载个人信息（更新本地表单和全局 store）
     const profile = await getProfile()
     applyProfile(profile)
     message.success('头像更新成功')
     onSuccess?.()
   } catch (error) {
+    message.error('头像上传失败')
     onError?.(error)
   }
 }

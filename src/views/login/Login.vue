@@ -426,12 +426,12 @@ onMounted(() => {
   transition: color 0.3s;
 }
 .login-icon:hover {
-  color: #4f8cff;
+  color: #1f4fbf;
 }
 
 :global(html.dark) .login-container {
   background:
-    linear-gradient(135deg, rgba(79, 140, 255, 0.14), transparent 36%),
+    linear-gradient(135deg, rgba(31, 79, 191, 0.14), transparent 36%),
     linear-gradient(315deg, rgba(99, 214, 133, 0.08), transparent 32%),
     var(--app-bg);
 }

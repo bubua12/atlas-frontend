@@ -1407,8 +1407,8 @@ onMounted(() => {
 
 :global(html.dark) .settings-nav-item:hover,
 :global(html.dark) .settings-nav-item.active {
-  color: #76a7ff;
-  background: rgba(79, 140, 255, 0.14);
+  color: #5b8ae0;
+  background: rgba(31, 79, 191, 0.14);
 }
 
 :global(html.dark) .settings-nav-item.active .settings-nav-icon {
@@ -1417,8 +1417,8 @@ onMounted(() => {
 
 :global(html.dark) .settings-header-icon,
 :global(html.dark) .policy-summary-number {
-  color: #76a7ff;
-  background: rgba(79, 140, 255, 0.14);
+  color: #5b8ae0;
+  background: rgba(31, 79, 191, 0.14);
 }
 
 :global(html.dark) .setting-section,
@@ -1436,7 +1436,7 @@ onMounted(() => {
 }
 
 :global(html.dark) .account-stat span {
-  color: #76a7ff;
+  color: #5b8ae0;
 }
 
 :global(html.dark) .preview-panel b {

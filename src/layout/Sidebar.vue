@@ -91,7 +91,7 @@ const router = useRouter()
   height: 30px;
   place-items: center;
   border-radius: 8px;
-  background: #4f8cff;
+  background: #1f4fbf;
   font-weight: 700;
 }
 

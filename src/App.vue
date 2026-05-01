@@ -15,7 +15,7 @@ const themeConfig = computed(() => ({
   algorithm: themeStore.isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
   token: themeStore.isDark
     ? {
-        colorPrimary: '#4f8cff',
+        colorPrimary: '#1f4fbf',
         colorBgBase: '#101114',
         colorBgLayout: '#101114',
         colorBgContainer: '#171a20',
@@ -29,7 +29,7 @@ const themeConfig = computed(() => ({
         boxShadow: '0 12px 28px rgba(0, 0, 0, 0.28)'
       }
     : {
-        colorPrimary: '#1677ff',
+        colorPrimary: '#1f4fbf',
         borderRadius: 8
       },
   components: themeStore.isDark
@@ -52,7 +52,7 @@ const themeConfig = computed(() => ({
           darkItemBg: '#111318',
           darkSubMenuItemBg: '#111318',
           darkItemSelectedBg: '#1f4fbf',
-          itemSelectedBg: 'rgba(79, 140, 255, 0.14)'
+          itemSelectedBg: 'rgba(31, 79, 191, 0.14)'
         },
         Modal: {
           contentBg: '#171a20',

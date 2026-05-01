@@ -195,8 +195,8 @@ const cards = computed(() => [
     title: '在线用户',
     value: onlineUsers.value.length,
     desc: '当前有效在线会话',
-    color: '#4f8cff',
-    background: 'rgba(79, 140, 255, 0.14)',
+    color: '#1f4fbf',
+    background: 'rgba(31, 79, 191, 0.14)',
     icon: UserOutlined
   },
   {
@@ -327,7 +327,7 @@ onMounted(loadDashboard)
   border: 1px solid var(--app-border);
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(79, 140, 255, 0.1), rgba(99, 214, 133, 0.06)),
+    linear-gradient(135deg, rgba(31, 79, 191, 0.1), rgba(99, 214, 133, 0.06)),
     var(--app-panel);
   box-shadow: var(--app-shadow);
 }
@@ -597,7 +597,7 @@ onMounted(loadDashboard)
 }
 
 .quick-link:hover {
-  border-color: #4f8cff;
+  border-color: #1f4fbf;
   color: #1f4fbf;
   background: var(--app-primary-soft);
 }
@@ -615,7 +615,7 @@ onMounted(loadDashboard)
 
 :global(html.dark) .dashboard-hero {
   background:
-    linear-gradient(135deg, rgba(79, 140, 255, 0.14), rgba(99, 214, 133, 0.08)),
+    linear-gradient(135deg, rgba(31, 79, 191, 0.14), rgba(99, 214, 133, 0.08)),
     var(--app-panel);
 }
 
@@ -632,13 +632,13 @@ onMounted(loadDashboard)
 }
 
 :global(html.dark) .quick-link:hover {
-  color: #76a7ff;
-  background: rgba(79, 140, 255, 0.14);
+  color: #5b8ae0;
+  background: rgba(31, 79, 191, 0.14);
 }
 
 :global(html.dark) .quick-icon {
-  color: #76a7ff;
-  background: rgba(79, 140, 255, 0.14);
+  color: #5b8ae0;
+  background: rgba(31, 79, 191, 0.14);
 }
 
 @media (max-width: 1180px) {

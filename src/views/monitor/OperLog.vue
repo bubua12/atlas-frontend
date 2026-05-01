@@ -608,13 +608,13 @@ onMounted(loadData)
 }
 
 :global(html.dark) .detail-modal-icon {
-  color: #76a7ff;
-  background: rgba(79, 140, 255, 0.14);
+  color: #5b8ae0;
+  background: rgba(31, 79, 191, 0.14);
 }
 
 :global(html.dark) .detail-hero {
   background:
-    linear-gradient(135deg, rgba(79, 140, 255, 0.14), rgba(79, 140, 255, 0)),
+    linear-gradient(135deg, rgba(31, 79, 191, 0.14), rgba(31, 79, 191, 0)),
     #141820;
 }
 
@@ -624,7 +624,7 @@ onMounted(loadData)
 
 :global(html.dark) .detail-cost,
 :global(html.dark) .detail-section-title .anticon {
-  color: #76a7ff;
+  color: #5b8ae0;
 }
 
 :global(html.dark) .detail-item,
@@ -634,7 +634,7 @@ onMounted(loadData)
 }
 
 :global(html.dark) .detail-collapse-title .anticon {
-  color: #76a7ff;
+  color: #5b8ae0;
 }
 
 @media (max-width: 760px) {

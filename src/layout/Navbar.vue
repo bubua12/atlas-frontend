@@ -149,7 +149,7 @@ onMounted(loadProfile)
 }
 
 .avatar-button:hover {
-  border-color: #4f8cff;
+  border-color: #1f4fbf;
 }
 
 .profile-card {
