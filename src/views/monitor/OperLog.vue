@@ -607,36 +607,6 @@ onMounted(loadData)
   padding-top: 2px;
 }
 
-:global(html.dark) .detail-modal-icon {
-  color: #5b8ae0;
-  background: rgba(31, 79, 191, 0.14);
-}
-
-:global(html.dark) .detail-hero {
-  background:
-    linear-gradient(135deg, rgba(31, 79, 191, 0.14), rgba(31, 79, 191, 0)),
-    #141820;
-}
-
-:global(html.dark) .operlog-filter {
-  background: #141820;
-}
-
-:global(html.dark) .detail-cost,
-:global(html.dark) .detail-section-title .anticon {
-  color: #5b8ae0;
-}
-
-:global(html.dark) .detail-item,
-:global(html.dark) .detail-code,
-:global(html.dark) .detail-collapse {
-  background: #12151b;
-}
-
-:global(html.dark) .detail-collapse-title .anticon {
-  color: #5b8ae0;
-}
-
 @media (max-width: 760px) {
   .operlog-filter {
     grid-template-columns: 1fr;

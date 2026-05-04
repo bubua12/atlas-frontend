@@ -323,10 +323,6 @@ onMounted(loadProfile)
   min-width: 150px;
 }
 
-:global(html.dark) .avatar-upload {
-  background: #141820;
-}
-
 @media (max-width: 980px) {
   .profile-layout {
     grid-template-columns: 1fr;

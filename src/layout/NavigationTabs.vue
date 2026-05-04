@@ -176,15 +176,4 @@ function closeAll() {
   padding: 8px;
 }
 
-html.dark .navigation-tabs {
-  background: #151922;
-}
-
-html.dark .nav-tab:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-html.dark .nav-tab.active {
-  background: var(--app-panel);
-}
 </style>

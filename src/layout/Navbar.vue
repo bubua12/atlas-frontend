@@ -5,12 +5,6 @@
       <div class="header-subtitle">Atlas Enterprise Platform</div>
     </div>
     <div class="header-actions">
-      <a-button shape="circle" @click="themeStore.toggle()">
-        <template #icon>
-          <BulbOutlined v-if="!themeStore.isDark" />
-          <BulbFilled v-else />
-        </template>
-      </a-button>
       <a-popover v-model:open="profileOpen" trigger="click" placement="bottomRight" overlay-class-name="profile-popover">
         <button class="avatar-button" type="button">
           <a-avatar :src="userStore.avatar" :size="34">{{ avatarText }}</a-avatar>
@@ -63,21 +57,19 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { useThemeStore } from '@/stores/theme'
 import { logout } from '@/api/auth'
 import { getProfile } from '@/api/user'
-import { BulbOutlined, BulbFilled, IdcardOutlined, LogoutOutlined } from '@ant-design/icons-vue'
+import { IdcardOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
-const themeStore = useThemeStore()
 const profileOpen = ref(false)
 const profile = computed(() => userStore.profile)
 const avatarText = computed(() => (userStore.displayName || userStore.username || 'A').slice(0, 1).toUpperCase())
 
 const headerStyle = computed(() => ({
-  background: themeStore.isDark ? 'var(--app-panel)' : '#fff',
+  background: '#fff',
   padding: '0 20px',
   height: '56px',
   display: 'flex',
@@ -211,11 +203,6 @@ onMounted(loadProfile)
 
 .profile-actions .ant-btn {
   padding-inline: 0;
-}
-
-:global(html.dark) .app-header {
-  border-bottom: 1px solid var(--app-border);
-  box-shadow: none;
 }
 
 :global(.profile-popover .ant-popover-inner) {

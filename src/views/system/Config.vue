@@ -1401,49 +1401,4 @@ onMounted(() => {
   }
 }
 
-:global(html.dark) .settings-main {
-  background: linear-gradient(180deg, #141820, var(--app-panel) 160px);
-}
-
-:global(html.dark) .settings-nav-item:hover,
-:global(html.dark) .settings-nav-item.active {
-  color: #5b8ae0;
-  background: rgba(31, 79, 191, 0.14);
-}
-
-:global(html.dark) .settings-nav-item.active .settings-nav-icon {
-  background: #2f6cf6;
-}
-
-:global(html.dark) .settings-header-icon,
-:global(html.dark) .policy-summary-number {
-  color: #5b8ae0;
-  background: rgba(31, 79, 191, 0.14);
-}
-
-:global(html.dark) .setting-section,
-:global(html.dark) .setting-check-grid .ant-checkbox-wrapper,
-:global(html.dark) .policy-summary,
-:global(html.dark) .account-stat,
-:global(html.dark) .watermark-preview,
-:global(html.dark) .watermark-preview-surface,
-:global(html.dark) .preview-panel,
-:global(html.dark) .preview-table,
-:global(html.dark) .watermark-color-swatch,
-:global(html.dark) .watermark-custom-color,
-:global(html.dark) .setting-control.has-unit > span {
-  background: #141820;
-}
-
-:global(html.dark) .account-stat span {
-  color: #5b8ae0;
-}
-
-:global(html.dark) .preview-panel b {
-  background: rgba(118, 167, 255, 0.28);
-}
-
-:global(html.dark) .watermark-preview-mask {
-  background: rgba(20, 24, 32, 0.64);
-}
 </style>

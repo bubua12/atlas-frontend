@@ -30,66 +30,62 @@
       </section>
 
       <section class="login-form-panel">
-        <a-button class="theme-toggle" shape="circle" @click="themeStore.toggle()">
-          <template #icon>
-            <BulbOutlined v-if="!themeStore.isDark" />
-            <BulbFilled v-else />
-          </template>
-        </a-button>
         <a-card class="login-card" :bordered="false">
           <div class="login-heading">
             <div class="login-title">登录控制台</div>
             <div class="login-subtitle">请选择登录方式继续</div>
           </div>
-      <a-tabs v-model:activeKey="loginType" @change="onTabChange">
-        <a-tab-pane key="password" tab="账号密码" />
-        <a-tab-pane key="captcha" tab="短信验证码" />
-        <a-tab-pane key="wechat" tab="企业微信登录" />
-      </a-tabs>
-      <a-form :model="form" :rules="currentRules" ref="formRef">
-        <template v-if="loginType === 'password'">
-          <a-form-item name="username">
-            <a-input v-model:value="form.username" placeholder="用户名">
-              <template #prefix><UserOutlined /></template>
-            </a-input>
-          </a-form-item>
-          <a-form-item name="password">
-            <a-input-password v-model:value="form.password" placeholder="密码" @pressEnter="handleLogin">
-              <template #prefix><LockOutlined /></template>
-            </a-input-password>
-          </a-form-item>
-        </template>
-        <template v-if="loginType === 'captcha'">
-          <a-form-item name="phone">
-            <a-input v-model:value="form.phone" placeholder="手机号">
-              <template #prefix><MobileOutlined /></template>
-            </a-input>
-          </a-form-item>
-          <a-form-item name="captchaCode">
-            <div class="captcha-row">
-              <a-input v-model:value="form.captchaCode" placeholder="验证码" @pressEnter="handleLogin">
-                <template #prefix><SafetyOutlined /></template>
-              </a-input>
-              <a-button :disabled="countdown > 0" @click="handleSendSms">
-                {{ countdown > 0 ? `${countdown}s` : '发送验证码' }}
-              </a-button>
+          <a-tabs class="login-tabs" v-model:activeKey="loginType" @change="onTabChange">
+            <a-tab-pane key="password" tab="账号密码" />
+            <a-tab-pane key="captcha" tab="短信验证" />
+            <a-tab-pane key="wechat" tab="企业微信" />
+          </a-tabs>
+          <div class="login-content">
+            <a-form class="login-form" :model="form" :rules="currentRules" ref="formRef">
+              <template v-if="loginType === 'password'">
+                <a-form-item name="username">
+                  <a-input v-model:value="form.username" placeholder="用户名">
+                    <template #prefix><UserOutlined /></template>
+                  </a-input>
+                </a-form-item>
+                <a-form-item name="password">
+                  <a-input-password v-model:value="form.password" placeholder="密码" @pressEnter="handleLogin">
+                    <template #prefix><LockOutlined /></template>
+                  </a-input-password>
+                </a-form-item>
+              </template>
+              <template v-if="loginType === 'captcha'">
+                <a-form-item name="phone">
+                  <a-input v-model:value="form.phone" placeholder="手机号">
+                    <template #prefix><MobileOutlined /></template>
+                  </a-input>
+                </a-form-item>
+                <a-form-item name="captchaCode">
+                  <div class="captcha-row">
+                    <a-input v-model:value="form.captchaCode" placeholder="验证码" @pressEnter="handleLogin">
+                      <template #prefix><SafetyOutlined /></template>
+                    </a-input>
+                    <a-button :disabled="countdown > 0" @click="handleSendSms">
+                      {{ countdown > 0 ? `${countdown}s` : '发送验证码' }}
+                    </a-button>
+                  </div>
+                </a-form-item>
+              </template>
+              <template v-if="loginType === 'wechat'">
+                <div id="wecom-qr" class="wecom-qr-container" />
+                <a-spin v-if="qrLoading" class="qr-loading" />
+              </template>
+              <a-form-item v-if="loginType !== 'wechat'" class="login-action">
+                <a-button type="primary" block size="large" :loading="loading" @click="handleLogin">登 录</a-button>
+              </a-form-item>
+            </a-form>
+            <div class="other-login" v-if="loginType !== 'wechat'">
+              <a-divider plain>其他登录方式</a-divider>
+              <div class="login-icons">
+                <WeiboCircleOutlined class="login-icon" title="微博登录" @click="handleWeiboLogin" />
+              </div>
             </div>
-          </a-form-item>
-        </template>
-        <template v-if="loginType === 'wechat'">
-          <div id="wecom-qr" class="wecom-qr-container" />
-          <a-spin v-if="qrLoading" style="display:block;text-align:center;margin:20px 0" />
-        </template>
-        <a-form-item v-if="loginType !== 'wechat'">
-          <a-button type="primary" block size="large" :loading="loading" @click="handleLogin">登 录</a-button>
-        </a-form-item>
-      </a-form>
-      <div class="other-login" v-if="loginType !== 'wechat'">
-        <a-divider plain>其他登录方式</a-divider>
-        <div class="login-icons">
-           <WeiboCircleOutlined class="login-icon" @click="handleWeiboLogin" />
-        </div>
-      </div>
+          </div>
         </a-card>
       </section>
     </div>
@@ -101,18 +97,15 @@ import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { useUserStore } from '@/stores/user'
-import { useThemeStore } from '@/stores/theme'
 import { sendSms, getWecomConfig } from '@/api/auth'
 import {
   UserOutlined, LockOutlined, MobileOutlined,
-  SafetyOutlined, BulbOutlined, BulbFilled,
-  WeiboCircleOutlined
+  SafetyOutlined, WeiboCircleOutlined
 } from '@ant-design/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
-const themeStore = useThemeStore()
 const formRef = ref()
 const loading = ref(false)
 const qrLoading = ref(false)
@@ -240,49 +233,84 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.theme-toggle {
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  z-index: 2;
+.login-container,
+.login-container * {
+  box-sizing: border-box;
 }
 
 .login-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  color-scheme: only light;
   min-height: 100vh;
-  padding: 32px;
+  padding: clamp(22px, 4vw, 64px);
+  overflow: hidden;
   background:
-    linear-gradient(135deg, rgba(22, 119, 255, 0.12), transparent 36%),
-    linear-gradient(315deg, rgba(82, 196, 26, 0.08), transparent 32%),
-    var(--app-bg);
+    linear-gradient(120deg, rgba(31, 79, 191, 0.12), transparent 38%),
+    linear-gradient(150deg, #f8fbff 0%, #eef4fb 46%, #f6fbf1 100%);
+}
+
+.login-container::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.74;
+  background-image:
+    linear-gradient(rgba(31, 79, 191, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 79, 191, 0.055) 1px, transparent 1px);
+  background-size: 36px 36px;
 }
 
 .login-shell {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1fr);
-  min-height: calc(100vh - 64px);
-  overflow: hidden;
-  border: 1px solid var(--app-border);
-  border-radius: 12px;
-  background: var(--app-panel);
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+  grid-template-columns: minmax(0, 1fr) clamp(430px, 24vw, 500px);
+  gap: clamp(48px, 8vw, 140px);
+  align-items: center;
+  width: min(1760px, 100%);
+  min-height: min(760px, calc(100vh - 64px));
 }
 
 .login-brand-panel {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 42px;
+  justify-content: center;
+  align-self: stretch;
+  min-height: 520px;
+  padding: 24px clamp(24px, 4vw, 64px) 24px 8px;
   overflow: hidden;
-  color: #fff;
+  color: var(--app-text);
+  background: transparent;
+}
+
+.login-brand-panel::after {
+  position: absolute;
+  right: 0;
+  bottom: 34px;
+  left: 8px;
+  height: 160px;
+  content: "";
+  border: 1px solid rgba(31, 79, 191, 0.1);
+  border-radius: 8px;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
-    linear-gradient(135deg, #12213a, #183b6e 52%, #0f5f73);
-  background-size: 28px 28px, 28px 28px, auto;
+    linear-gradient(135deg, rgba(31, 79, 191, 0.12), rgba(82, 196, 26, 0.08)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
+  transform: skewY(-4deg);
+  transform-origin: left center;
 }
 
 .brand-block {
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -293,11 +321,13 @@ onMounted(() => {
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(31, 79, 191, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  background: #1f4fbf;
   font-size: 18px;
   font-weight: 800;
+  box-shadow: 0 12px 30px rgba(31, 79, 191, 0.2);
 }
 
 .brand-name {
@@ -308,78 +338,87 @@ onMounted(() => {
 
 .brand-subtitle {
   margin-top: 3px;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--app-text-muted);
   font-size: 12px;
+}
+
+.brand-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+}
+
+.brand-copy::before {
+  display: block;
+  width: 44px;
+  height: 4px;
+  margin-bottom: 22px;
+  border-radius: 4px;
+  background: #1f4fbf;
+  content: "";
 }
 
 .brand-copy h1 {
   margin: 0;
-  font-size: 38px;
+  color: #14213d;
+  font-size: clamp(38px, 4.3vw, 56px);
   font-weight: 750;
   letter-spacing: 0;
+  line-height: 1.08;
 }
 
 .brand-copy p {
-  max-width: 360px;
-  margin: 12px 0 0;
-  color: rgba(255, 255, 255, 0.72);
+  max-width: 430px;
+  margin: 18px 0 0;
+  color: var(--app-text-secondary);
   font-size: 15px;
   line-height: 1.8;
 }
 
 .brand-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.brand-metrics div {
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.brand-metrics span {
-  display: block;
-  color: rgba(255, 255, 255, 0.56);
-  font-size: 12px;
-}
-
-.brand-metrics strong {
-  display: block;
-  margin-top: 6px;
-  color: #fff;
-  font-size: 18px;
+  display: none;
 }
 
 .login-form-panel {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 42px;
-  background: var(--app-panel);
+  justify-content: flex-end;
+  align-self: stretch;
+  padding: 0;
+  background: transparent;
 }
 
 .login-card.ant-card {
-  width: min(430px, 100%);
-  background: transparent;
-  box-shadow: none;
+  width: 100%;
+  height: clamp(528px, 58vh, 592px);
+  min-height: 528px;
+  padding: 0;
+  border: 1px solid rgba(31, 79, 191, 0.12);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.16);
 }
 
 .login-card :deep(.ant-card-body) {
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 528px;
+  padding: 34px 32px 28px;
+  box-sizing: border-box;
 }
 
 .login-heading {
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .login-title {
   color: var(--app-text);
   font-size: 24px;
   font-weight: 700;
+  line-height: 1.25;
+  text-align: left;
 }
 
 .login-subtitle {
@@ -392,92 +431,224 @@ onMounted(() => {
   margin-bottom: 22px;
 }
 
+.login-card :deep(.ant-tabs-nav::before) {
+  border-bottom-color: var(--app-border);
+}
+
+.login-card :deep(.ant-tabs-nav-list) {
+  width: 100%;
+}
+
+.login-card :deep(.ant-tabs-tab) {
+  flex: 1;
+  justify-content: center;
+  margin: 0;
+  padding: 11px 0;
+  font-size: 14px;
+}
+
+.login-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.login-form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.login-form :deep(.ant-form-item) {
+  margin-bottom: 16px;
+}
+
 .login-card :deep(.ant-input),
 .login-card :deep(.ant-input-affix-wrapper) {
-  min-height: 42px;
+  min-height: 46px;
+  border-radius: 6px;
+}
+
+.login-card :deep(.ant-btn) {
+  border-radius: 6px;
+}
+
+.login-card :deep(.ant-btn-lg) {
+  height: 46px;
+}
+
+.login-action.ant-form-item {
+  margin-top: auto;
+  margin-bottom: 0;
 }
 
 .captcha-row {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 118px;
+  gap: 10px;
+}
+
+.captcha-row :deep(.ant-btn) {
+  height: 46px;
+  padding-inline: 12px;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .wecom-qr-container {
+  position: relative;
   display: flex;
+  flex: 1;
+  align-items: center;
   justify-content: center;
-  min-height: 300px;
+  min-height: 0;
+  overflow: hidden;
 }
-.wecom-qr-container iframe {
+
+.wecom-qr-container :deep(iframe) {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 320px !important;
+  height: 404px !important;
+  max-width: 100%;
   border: none;
+  transform: translateX(-50%) scale(0.84);
+  transform-origin: top center;
 }
+
+.qr-loading {
+  display: block;
+  margin: 14px auto 0;
+  text-align: center;
+}
+
 .other-login {
-  margin-top: 24px;
+  margin-top: 18px;
 }
+
+.other-login :deep(.ant-divider) {
+  margin: 0;
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+
 .login-icons {
   display: flex;
   justify-content: center;
-  gap: 24px;
-  margin-top: 12px;
+  gap: 12px;
+  margin-top: 14px;
 }
+
 .login-icon {
-  font-size: 24px;
-  color: #888;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--app-border);
+  border-radius: 50%;
+  color: var(--app-text-muted);
+  background: var(--app-panel);
+  font-size: 21px;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
+
 .login-icon:hover {
+  border-color: rgba(31, 79, 191, 0.32);
   color: #1f4fbf;
+  box-shadow: 0 8px 24px rgba(31, 79, 191, 0.14);
 }
 
-:global(html.dark) .login-container {
-  background:
-    linear-gradient(135deg, rgba(31, 79, 191, 0.14), transparent 36%),
-    linear-gradient(315deg, rgba(99, 214, 133, 0.08), transparent 32%),
-    var(--app-bg);
-}
-
-:global(html.dark) .login-shell {
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
-}
-
-:global(html.dark) .login-brand-panel {
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(135deg, #0d1422, #10274c 52%, #0d3b49);
-  background-size: 28px 28px, 28px 28px, auto;
-}
-
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .login-container {
-    padding: 16px;
+    align-items: flex-start;
+    padding: 22px 18px 32px;
   }
 
   .login-shell {
     grid-template-columns: 1fr;
+    gap: 28px;
+    min-height: auto;
   }
 
   .login-brand-panel {
-    min-height: 280px;
-    padding: 28px;
+    min-height: auto;
+    padding: 18px 0 0;
+  }
+
+  .login-brand-panel::after {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 92px;
+  }
+
+  .brand-block {
+    position: static;
+    margin-bottom: 42px;
+  }
+
+  .brand-copy h1 {
+    font-size: 34px;
+  }
+
+  .login-form-panel {
+    justify-content: center;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .login-container {
+    padding: 18px 14px 28px;
+  }
+
+  .login-shell {
+    gap: 22px;
+  }
+
+  .brand-block {
+    margin-bottom: 26px;
+  }
+
+  .brand-copy::before {
+    margin-bottom: 16px;
   }
 
   .brand-copy h1 {
     font-size: 30px;
   }
 
-  .login-form-panel {
-    padding: 28px;
+  .brand-copy p {
+    margin-top: 12px;
+    font-size: 13px;
   }
-}
 
-@media (max-width: 560px) {
-  .brand-metrics {
-    grid-template-columns: 1fr;
+  .login-card.ant-card {
+    width: 100%;
+    height: 512px;
+    min-height: 512px;
+  }
+
+  .login-card :deep(.ant-card-body) {
+    height: 100%;
+    min-height: 512px;
+    padding: 24px 20px;
+  }
+
+  .wecom-qr-container :deep(iframe) {
+    transform: translateX(-50%) scale(0.74);
   }
 
   .captcha-row {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+  }
+
+  .captcha-row :deep(.ant-btn) {
+    width: 100%;
   }
 }
 </style>

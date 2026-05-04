@@ -613,34 +613,6 @@ onMounted(loadDashboard)
   background: var(--app-primary-soft);
 }
 
-:global(html.dark) .dashboard-hero {
-  background:
-    linear-gradient(135deg, rgba(31, 79, 191, 0.14), rgba(99, 214, 133, 0.08)),
-    var(--app-panel);
-}
-
-:global(html.dark) .quick-link {
-  background: #141820;
-}
-
-:global(html.dark) .log-item {
-  background: #141820;
-}
-
-:global(html.dark) .service-item {
-  background: #141820;
-}
-
-:global(html.dark) .quick-link:hover {
-  color: #5b8ae0;
-  background: rgba(31, 79, 191, 0.14);
-}
-
-:global(html.dark) .quick-icon {
-  color: #5b8ae0;
-  background: rgba(31, 79, 191, 0.14);
-}
-
 @media (max-width: 1180px) {
   .dashboard-grid,
   .dashboard-main {
