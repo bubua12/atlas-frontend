@@ -25,6 +25,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWatermarkStore } from '@/stores/watermark'
+import { useMessageStore } from '@/stores/message'
 import Sidebar from './Sidebar.vue'
 import Navbar from './Navbar.vue'
 import NavigationTabs from './NavigationTabs.vue'
@@ -32,6 +33,7 @@ import NavigationTabs from './NavigationTabs.vue'
 const route = useRoute()
 const refreshKey = ref(0)
 const watermarkStore = useWatermarkStore()
+const messageStore = useMessageStore()
 
 function refreshView() {
   refreshKey.value += 1
@@ -39,6 +41,7 @@ function refreshView() {
 
 onMounted(() => {
   watermarkStore.load(true).catch(() => watermarkStore.reset())
+  messageStore.connect()
 })
 </script>
 

@@ -5,6 +5,7 @@
       <div class="header-subtitle">Atlas Enterprise Platform</div>
     </div>
     <div class="header-actions">
+      <MessageBell />
       <a-popover v-model:open="profileOpen" trigger="click" placement="bottomRight" overlay-class-name="profile-popover">
         <button class="avatar-button" type="button">
           <a-avatar :src="userStore.avatar" :size="34">{{ avatarText }}</a-avatar>
@@ -60,6 +61,7 @@ import { useUserStore } from '@/stores/user'
 import { logout } from '@/api/auth'
 import { getProfile } from '@/api/user'
 import { IdcardOutlined, LogoutOutlined } from '@ant-design/icons-vue'
+import MessageBell from '@/components/MessageBell.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -78,8 +80,13 @@ const headerStyle = computed(() => ({
   boxShadow: '0 1px 4px rgba(0,21,41,0.08)',
 }))
 
+import { useMessageStore } from '@/stores/message'
+
+const messageStore = useMessageStore()
+
 function handleLogout() {
   logout().finally(() => {
+    messageStore.disconnect()
     userStore.logout()
     router.push('/login')
   })

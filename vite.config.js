@@ -13,7 +13,8 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: p => p.replace(/^\/api/, '')
+        rewrite: p => p.replace(/^\/api/, ''),
+        ws: true
       },
       // MinIO 文件代理：浏览器请求 /minio/atlas/xxx → 转发到 MinIO /atlas/xxx
       '/minio': {

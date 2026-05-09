@@ -18,7 +18,9 @@ const routes = [
       { path: 'monitor/server', component: () => import('@/views/monitor/Server.vue'), meta: { title: '服务监控' } },
       { path: 'monitor/online', component: () => import('@/views/monitor/Online.vue'), meta: { title: '在线用户' } },
       { path: 'monitor/service', component: () => import('@/views/monitor/Service.vue'), meta: { title: '服务状态' } },
-      { path: 'monitor/operlog', component: () => import('@/views/monitor/OperLog.vue'), meta: { title: '操作日志' } }
+      { path: 'monitor/operlog', component: () => import('@/views/monitor/OperLog.vue'), meta: { title: '操作日志' } },
+      { path: 'message', component: () => import('@/views/message/MessageCenter.vue'), meta: { title: '消息中心' } },
+      { path: 'system/announce', component: () => import('@/views/system/Announce.vue'), meta: { title: '公告管理' } }
     ]
   }
 ]

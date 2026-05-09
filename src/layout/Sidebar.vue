@@ -22,6 +22,16 @@
         <a-menu-item key="/system/dict"><template #icon><BookOutlined /></template>字典管理</a-menu-item>
         <a-menu-item key="/system/config"><template #icon><ToolOutlined /></template>系统设置</a-menu-item>
       </a-sub-menu>
+      <a-sub-menu key="message">
+        <template #icon><MailOutlined /></template>
+        <template #title>消息中心</template>
+        <a-menu-item key="/message"><template #icon><MailOutlined /></template>我的消息</a-menu-item>
+      </a-sub-menu>
+      <a-sub-menu key="announce-manage">
+        <template #icon><NotificationOutlined /></template>
+        <template #title>消息管理</template>
+        <a-menu-item key="/system/announce"><template #icon><NotificationOutlined /></template>公告管理</a-menu-item>
+      </a-sub-menu>
       <a-sub-menu key="monitor">
         <template #icon><DesktopOutlined /></template>
         <template #title>系统监控</template>
@@ -44,7 +54,9 @@ import {
   DesktopOutlined,
   FileTextOutlined,
   HomeOutlined,
+  MailOutlined,
   MenuOutlined,
+  NotificationOutlined,
   SettingOutlined,
   TeamOutlined,
   ToolOutlined,
