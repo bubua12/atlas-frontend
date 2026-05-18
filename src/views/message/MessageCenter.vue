@@ -72,7 +72,7 @@
 
     <!-- 消息详情弹窗 -->
     <a-modal v-model:open="detailVisible" :title="detailMessage?.title"
-             :footer="null" width="600px">
+             :footer="null" width="700px">
       <div v-if="detailMessage">
         <a-descriptions :column="1" size="small" bordered style="margin-bottom: 16px;">
           <a-descriptions-item label="类型">
@@ -82,7 +82,9 @@
           </a-descriptions-item>
           <a-descriptions-item label="发布时间">{{ detailMessage.publishTime }}</a-descriptions-item>
         </a-descriptions>
-        <div class="message-detail-content" v-html="renderContent(detailMessage.content)"></div>
+        <div class="message-detail-content">
+          <MdPreview :modelValue="detailMessage.content || ''" language="zh-CN" :previewTheme="'default'" />
+        </div>
       </div>
     </a-modal>
   </div>
@@ -93,6 +95,8 @@ import { ref, reactive, onMounted } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import { useMessageStore } from '@/stores/message'
 import { listMyMessages, markRead, markAllRead, deleteMessage, batchDeleteMessages } from '@/api/message'
+import { MdPreview } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
 
 const messageStore = useMessageStore()
 
@@ -214,17 +218,14 @@ async function handleBatchDelete() {
     }
   })
 }
-
-function renderContent(content) {
-  if (!content) return ''
-  // 简单换行处理，后续可替换为 Markdown 渲染
-  return content.replace(/\n/g, '<br/>')
-}
 </script>
 
 <style scoped>
-.message-detail-content {
-  line-height: 1.8;
-  color: #333;
+.message-detail-content :deep(.md-editor) {
+  border: none;
+  background: transparent;
+}
+.message-detail-content :deep(.md-editor-preview) {
+  padding: 0;
 }
 </style>
