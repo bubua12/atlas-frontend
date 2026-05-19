@@ -42,6 +42,7 @@ function refreshView() {
 onMounted(() => {
   watermarkStore.load(true).catch(() => watermarkStore.reset())
   messageStore.connect()
+  messageStore.fetchUnreadCount()
 })
 </script>
 

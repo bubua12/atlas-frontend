@@ -136,6 +136,7 @@ const columns = [
 
 onMounted(() => {
   loadData()
+  messageStore.fetchUnreadCount()
 })
 
 async function loadData() {

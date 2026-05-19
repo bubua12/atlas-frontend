@@ -33,8 +33,8 @@
       </div>
     </template>
 
-    <a-badge :count="messageStore.badgeCount" :offset="[-4, 4]">
-      <BellOutlined class="nav-icon" style="cursor: pointer;" />
+    <a-badge :count="messageStore.badgeCount" :offset="[-6, 2]" :overflow-count="99">
+      <BellOutlined class="bell-icon" />
     </a-badge>
   </a-popover>
 </template>
@@ -97,6 +97,23 @@ function formatTime(time) {
 </script>
 
 <style scoped>
+.bell-icon {
+  font-size: 20px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.65);
+  transition: color 0.2s;
+}
+.bell-icon:hover {
+  color: #1890ff;
+}
+:deep(.ant-badge .ant-badge-count) {
+  font-size: 11px;
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+  padding: 0 4px;
+  box-shadow: none;
+}
 .message-popover {
   width: 320px;
 }
