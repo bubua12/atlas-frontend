@@ -16,6 +16,26 @@
             <template #icon><PlusOutlined /></template>
             新增
           </a-button>
+          <a-button @click="handleExport" :loading="exporting">
+            <template #icon><DownloadOutlined /></template>
+            导出
+          </a-button>
+          <a-dropdown>
+            <a-button>
+              <template #icon><UploadOutlined /></template>
+              导入
+            </a-button>
+            <template #overlay>
+              <a-menu @click="handleImportMenu">
+                <a-menu-item key="template">
+                  <FileExcelOutlined /> 下载模板
+                </a-menu-item>
+                <a-menu-item key="upload">
+                  <ImportOutlined /> 上传导入
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
         </div>
       </div>
 
@@ -96,14 +116,58 @@
         </a-checkbox-group>
       </a-spin>
     </a-modal>
+
+    <!-- 导入弹窗 -->
+    <a-modal v-model:open="importVisible" title="导入用户" :footer="null" :width="520">
+      <a-upload-dragger
+        name="file"
+        :multiple="false"
+        :before-upload="beforeImportUpload"
+        :show-upload-list="false"
+        accept=".xlsx,.xls"
+      >
+        <p class="ant-upload-drag-icon">
+          <InboxOutlined />
+        </p>
+        <p class="ant-upload-text">点击或拖拽 Excel 文件到此区域上传</p>
+        <p class="ant-upload-hint">仅支持 .xlsx / .xls 格式，单次最多 50000 行</p>
+      </a-upload-dragger>
+
+      <div v-if="importLoading" style="margin-top: 16px; text-align: center;">
+        <a-spin tip="正在导入，请稍候..." />
+      </div>
+
+      <div v-if="importResult" class="import-result">
+        <a-alert
+          :type="importResult.allSuccess ? 'success' : 'warning'"
+          show-icon
+          :message="`导入完成：成功 ${importResult.successCount} 条，失败 ${importResult.failCount} 条`"
+          style="margin-bottom: 12px"
+        />
+        <div v-if="importResult.errors?.length" class="import-errors">
+          <div class="import-errors-title">失败详情：</div>
+          <div v-for="(err, i) in importResult.errors.slice(0, 20)" :key="i" class="import-error-item">
+            <a-tag color="red">第 {{ err.rowNumber }} 行</a-tag>
+            <span>{{ err.errorMessage }}</span>
+          </div>
+          <div v-if="importResult.errors.length > 20" class="import-error-more">
+            ...还有 {{ importResult.errors.length - 20 }} 条错误
+          </div>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined, TeamOutlined } from '@ant-design/icons-vue'
-import { listUser, addUser, updateUser, deleteUser, assignUserRoles, getUserRoles } from '@/api/user'
+import {
+  DeleteOutlined, DownloadOutlined, EditOutlined, FileExcelOutlined,
+  ImportOutlined, InboxOutlined, PlusOutlined, SearchOutlined,
+  TeamOutlined, UploadOutlined
+} from '@ant-design/icons-vue'
+import { listUser, addUser, updateUser, deleteUser, assignUserRoles, getUserRoles, exportUser, importUser, downloadUserTemplate } from '@/api/user'
 import { listRole } from '@/api/role'
 
 const loading = ref(false)
@@ -117,6 +181,10 @@ const currentUserId = ref(null)
 const currentUserName = ref('')
 const roleOptions = ref([])
 const selectedRoleIds = ref([])
+const exporting = ref(false)
+const importVisible = ref(false)
+const importLoading = ref(false)
+const importResult = ref(null)
 const query = reactive({ username: '', pageNum: 1, pageSize: 10 })
 const form = reactive({ userId: null, username: '', nickname: '', password: '', email: '', phone: '', status: 0, roleIds: [] })
 const rules = {
@@ -214,5 +282,122 @@ async function handleDelete(id) {
   loadData()
 }
 
+/** 通用 blob 下载工具 */
+function downloadBlob(res, filename) {
+  const blob = new Blob([res.data])
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  link.click()
+  window.URL.revokeObjectURL(url)
+}
+
+/** 导出用户列表 */
+async function handleExport() {
+  exporting.value = true
+  try {
+    const res = await exportUser(query)
+    downloadBlob(res, `用户列表_${new Date().toISOString().slice(0, 10)}.xlsx`)
+    message.success('导出成功')
+  } catch {
+    message.error('导出失败')
+  } finally {
+    exporting.value = false
+  }
+}
+
+/** 导入下拉菜单 */
+function handleImportMenu({ key }) {
+  if (key === 'template') {
+    handleDownloadTemplate()
+  } else if (key === 'upload') {
+    importResult.value = null
+    importVisible.value = true
+  }
+}
+
+/** 下载导入模板 */
+async function handleDownloadTemplate() {
+  try {
+    const res = await downloadUserTemplate()
+    downloadBlob(res, '用户导入模板.xlsx')
+    message.success('模板下载成功')
+  } catch {
+    message.error('模板下载失败')
+  }
+}
+
+/** 上传前校验 */
+function beforeImportUpload(file) {
+  const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls')
+  if (!isExcel) {
+    message.error('只能上传 .xlsx / .xls 格式的文件')
+    return false
+  }
+  if (file.size / 1024 / 1024 > 10) {
+    message.error('文件大小不能超过 10MB')
+    return false
+  }
+  doImport(file)
+  return false // 阻止 antd 自动上传
+}
+
+/** 执行导入 */
+async function doImport(file) {
+  importLoading.value = true
+  importResult.value = null
+  try {
+    const result = await importUser(file)
+    importResult.value = result
+    if (result.allSuccess) {
+      message.success(`导入成功，共 ${result.successCount} 条`)
+      importVisible.value = false
+      loadData()
+    } else if (result.successCount > 0) {
+      message.warning(`部分导入成功：${result.successCount} 条成功，${result.failCount} 条失败`)
+      loadData()
+    } else {
+      message.error(`导入失败，${result.failCount} 条数据校验不通过`)
+    }
+  } catch {
+    message.error('导入失败，请检查文件格式')
+  } finally {
+    importLoading.value = false
+  }
+}
+
 onMounted(loadData)
 </script>
+
+<style scoped>
+.import-result {
+  margin-top: 16px;
+}
+
+.import-errors {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.import-errors-title {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.import-error-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+  color: var(--app-text-secondary);
+}
+
+.import-error-more {
+  padding: 4px 0;
+  color: var(--app-text-muted);
+  font-size: 12px;
+}
+</style>

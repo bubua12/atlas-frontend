@@ -6,10 +6,16 @@
           <h2 class="page-title">操作日志</h2>
           <div class="page-subtitle">查询各服务的操作审计日志</div>
         </div>
-        <a-button @click="loadData">
-          <template #icon><ReloadOutlined /></template>
-          刷新
-        </a-button>
+        <div style="display: flex; gap: 8px;">
+          <a-button @click="handleExport" :loading="exporting">
+            <template #icon><DownloadOutlined /></template>
+            导出
+          </a-button>
+          <a-button @click="loadData">
+            <template #icon><ReloadOutlined /></template>
+            刷新
+          </a-button>
+        </div>
       </div>
 
       <div class="operlog-filter">
@@ -173,6 +179,7 @@ import {
   ClockCircleOutlined,
   CloseCircleOutlined,
   CodeOutlined,
+  DownloadOutlined,
   FileTextOutlined,
   ReloadOutlined,
   SearchOutlined,
@@ -181,6 +188,7 @@ import {
 import request from '@/utils/request'
 
 const loading = ref(false)
+const exporting = ref(false)
 const tableData = ref([])
 const dateRange = ref(null)
 const detailVisible = ref(false)
@@ -325,6 +333,38 @@ async function handleDelete(operId) {
   await request.delete('/monitor/operlog', { data: [operId] })
   message.success('删除成功')
   loadData()
+}
+
+/** 通用 blob 下载工具 */
+function downloadBlob(res, filename) {
+  const blob = new Blob([res.data])
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  link.click()
+  window.URL.revokeObjectURL(url)
+}
+
+/** 导出操作日志 */
+async function handleExport() {
+  exporting.value = true
+  try {
+    if (dateRange.value && dateRange.value.length === 2) {
+      query.beginTime = dateRange.value[0].format('YYYY-MM-DDTHH:mm:ss')
+      query.endTime = dateRange.value[1].format('YYYY-MM-DDTHH:mm:ss')
+    }
+    const res = await request.get('/monitor/operlog/export', {
+      params: query,
+      responseType: 'blob'
+    })
+    downloadBlob(res, `操作日志_${new Date().toISOString().slice(0, 10)}.xlsx`)
+    message.success('导出成功')
+  } catch {
+    message.error('导出失败')
+  } finally {
+    exporting.value = false
+  }
 }
 
 onMounted(loadData)
