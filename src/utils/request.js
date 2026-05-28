@@ -3,6 +3,9 @@ import { message } from 'ant-design-vue'
 import { useUserStore } from '@/stores/user'
 import router from '@/router'
 
+// 401 去重：并发请求同时过期时只跳一次登录页
+let isRedirectingToLogin = false
+
 const request = axios.create({
   baseURL: '/api',
   timeout: 10000
@@ -45,9 +48,15 @@ request.interceptors.response.use(
       } catch { /* 非 JSON blob，走兜底逻辑 */ }
     }
     if (err.response?.status === 401) {
-      const userStore = useUserStore()
-      userStore.logout()
-      router.push('/login')
+      if (!isRedirectingToLogin) {
+        isRedirectingToLogin = true
+        const userStore = useUserStore()
+        userStore.logout()
+        router.push('/login')
+        message.error('登录已过期，请重新登录')
+        setTimeout(() => { isRedirectingToLogin = false }, 1000)
+      }
+      return Promise.reject(err)
     }
     message.error(err.message || '网络错误')
     return Promise.reject(err)
