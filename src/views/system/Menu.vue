@@ -29,7 +29,7 @@
           <h2 class="page-title">{{ currentNodeName }}</h2>
           <div class="page-subtitle">维护菜单、按钮权限和路由入口</div>
         </div>
-        <a-button type="primary" @click="openDialog()">
+        <a-button type="primary" v-has-permi="['system:menu:add']" @click="openDialog()">
           <template #icon><PlusOutlined /></template>
           新增菜单
         </a-button>
@@ -54,16 +54,16 @@
           </template>
           <template v-if="column.key === 'action'">
             <div class="table-actions">
-              <a-button type="link" size="small" @click="openDialog(record)">
+              <a-button type="link" size="small" v-has-permi="['system:menu:edit']" @click="openDialog(record)">
                 <template #icon><EditOutlined /></template>
                 编辑
               </a-button>
-              <a-button type="link" size="small" @click="openDialog({ parentId: record.menuId })">
+              <a-button type="link" size="small" v-has-permi="['system:menu:add']" @click="openDialog({ parentId: record.menuId })">
                 <template #icon><PlusOutlined /></template>
                 新增子项
               </a-button>
               <a-popconfirm title="确认删除？" @confirm="handleDelete(record.menuId)">
-                <a-button type="link" danger size="small">
+                <a-button type="link" danger size="small" v-has-permi="['system:menu:remove']">
                   <template #icon><DeleteOutlined /></template>
                   删除
                 </a-button>

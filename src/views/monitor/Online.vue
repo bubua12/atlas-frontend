@@ -22,7 +22,7 @@
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
             <a-popconfirm title="确认强制下线？" @confirm="handleForceLogout(record.token)">
-              <a-button type="link" danger size="small">
+              <a-button type="link" danger size="small" v-has-permi="['monitor:online:kick']">
                 <template #icon><LogoutOutlined /></template>
                 强制下线
               </a-button>

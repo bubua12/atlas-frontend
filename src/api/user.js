@@ -37,3 +37,8 @@ export const importUser = file => {
 export const downloadUserTemplate = () => request.get('/system/user/import/template', {
   responseType: 'blob'
 })
+
+/**
+ * 获取当前用户的权限标识列表（用于按钮级权限控制）
+ */
+export const getPermissions = () => request.get('/system/user/permissions')

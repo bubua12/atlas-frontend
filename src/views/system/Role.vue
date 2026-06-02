@@ -12,7 +12,7 @@
             <template #icon><SearchOutlined /></template>
             搜索
           </a-button>
-          <a-button type="primary" @click="openDialog()">
+          <a-button type="primary" v-has-permi="['system:role:add']" @click="openDialog()">
             <template #icon><PlusOutlined /></template>
             新增
           </a-button>
@@ -38,24 +38,24 @@
           </template>
           <template v-if="column.key === 'action'">
             <div class="table-actions">
-              <a-button type="link" size="small" @click="openDialog(record)">
+              <a-button type="link" size="small" v-has-permi="['system:role:edit']" @click="openDialog(record)">
                 <template #icon><EditOutlined /></template>
                 编辑
               </a-button>
-              <a-button type="link" size="small" @click="openDataScopeDialog(record)">
+              <a-button type="link" size="small" v-has-permi="['system:role:edit']" @click="openDataScopeDialog(record)">
                 <template #icon><SafetyCertificateOutlined /></template>
                 数据权限
               </a-button>
-              <a-button type="link" size="small" @click="openUserDialog(record)">
+              <a-button type="link" size="small" v-has-permi="['system:role:edit']" @click="openUserDialog(record)">
                 <template #icon><TeamOutlined /></template>
                 分配用户
               </a-button>
-              <a-button type="link" size="small" @click="openMenuDialog(record)">
+              <a-button type="link" size="small" v-has-permi="['system:role:edit']" @click="openMenuDialog(record)">
                 <template #icon><MenuOutlined /></template>
                 绑定菜单
               </a-button>
               <a-popconfirm title="确认删除？" @confirm="handleDelete(record.roleId)">
-                <a-button type="link" danger size="small">
+                <a-button type="link" danger size="small" v-has-permi="['system:role:remove']">
                   <template #icon><DeleteOutlined /></template>
                   删除
                 </a-button>

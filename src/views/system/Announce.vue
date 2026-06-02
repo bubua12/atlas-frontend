@@ -13,7 +13,7 @@
             <a-select-option :value="1">已发布</a-select-option>
             <a-select-option :value="2">已撤回</a-select-option>
           </a-select>
-          <a-button type="primary" @click="openDialog()">
+          <a-button type="primary" v-has-permi="['message:announce:add']" @click="openDialog()">
             <PlusOutlined /> 发布公告
           </a-button>
         </div>
@@ -40,9 +40,9 @@
           </template>
           <template v-if="column.key === 'action'">
             <a-space>
-              <a v-if="record.status === 0 || record.status === 1" @click="openDialog(record)">编辑</a>
-              <a v-if="record.status === 1" @click="handleRevoke(record)">撤回</a>
-              <a style="color: #ff4d4f;" @click="handleDelete(record)">删除</a>
+              <a v-if="record.status === 0 || record.status === 1" v-has-permi="['message:announce:edit']" @click="openDialog(record)">编辑</a>
+              <a v-if="record.status === 1" v-has-permi="['message:announce:edit']" @click="handleRevoke(record)">撤回</a>
+              <a v-has-permi="['message:announce:remove']" style="color: #ff4d4f;" @click="handleDelete(record)">删除</a>
             </a-space>
           </template>
         </template>

@@ -6,7 +6,7 @@
           <h2 class="page-title">部门管理</h2>
           <div class="page-subtitle">维护组织层级、排序和启停状态</div>
         </div>
-        <a-button type="primary" @click="openDialog()">
+        <a-button type="primary" v-has-permi="['system:dept:add']" @click="openDialog()">
           <template #icon><PlusOutlined /></template>
           新增部门
         </a-button>
@@ -21,16 +21,16 @@
           </template>
           <template v-if="column.key === 'action'">
             <div class="table-actions">
-              <a-button type="link" size="small" @click="openDialog(record)">
+              <a-button type="link" size="small" v-has-permi="['system:dept:edit']" @click="openDialog(record)">
                 <template #icon><EditOutlined /></template>
                 编辑
               </a-button>
-              <a-button type="link" size="small" @click="openDialog({ parentId: record.deptId })">
+              <a-button type="link" size="small" v-has-permi="['system:dept:add']" @click="openDialog({ parentId: record.deptId })">
                 <template #icon><PlusOutlined /></template>
                 新增下级
               </a-button>
               <a-popconfirm title="确认删除？" @confirm="handleDelete(record.deptId)">
-                <a-button type="link" danger size="small">
+                <a-button type="link" danger size="small" v-has-permi="['system:dept:remove']">
                   <template #icon><DeleteOutlined /></template>
                   删除
                 </a-button>

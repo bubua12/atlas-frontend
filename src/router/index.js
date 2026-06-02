@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useMenuStore } from '@/stores/menu'
+import { useUserStore } from '@/stores/user'
 
 const staticRoutes = [
   { path: '/login', component: () => import('@/views/login/Login.vue') },
@@ -32,9 +33,12 @@ router.beforeEach(async (to, from, next) => {
 
   // 动态路由尚未加载 → 拉取菜单并注册
   const menuStore = useMenuStore()
+  const userStore = useUserStore()
   if (!menuStore.routesLoaded) {
     try {
       const routes = await menuStore.generateRoutes()
+      // 同时加载权限列表
+      await userStore.loadPermissions()
       routes.forEach(route => router.addRoute('/', route))
       // 添加 404 兜底路由（必须在所有动态路由之后）
       router.addRoute({ path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/404' })
@@ -43,6 +47,7 @@ router.beforeEach(async (to, from, next) => {
     } catch (e) {
       console.error('[router] 加载动态菜单失败', e)
       menuStore.resetRoutes()
+      userStore.permissions = []
       return next('/login')
     }
   }

@@ -31,7 +31,7 @@
               <p>{{ activeNav.longDesc }}</p>
             </span>
           </div>
-          <a-button type="primary" :loading="saving" @click="handleSave(activeType)">
+          <a-button type="primary" v-has-permi="['system:config:edit']" :loading="saving" @click="handleSave(activeType)">
             <template #icon><SaveOutlined /></template>
             保存
           </a-button>

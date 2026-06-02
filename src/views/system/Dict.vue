@@ -7,7 +7,7 @@
               <h3 class="panel-heading-title">字典类型</h3>
               <div class="panel-heading-desc">点击左侧类型查看右侧字典项</div>
             </div>
-            <a-button type="primary" @click="openTypeDialog()">
+            <a-button type="primary" v-has-permi="['system:dict:add']" @click="openTypeDialog()">
               <template #icon><PlusOutlined /></template>
               新增
             </a-button>
@@ -23,12 +23,12 @@
               </template>
               <template v-if="column.key === 'action'">
                 <div class="table-actions">
-                  <a-button type="link" size="small" @click.stop="openTypeDialog(record)">
+                  <a-button type="link" size="small" v-has-permi="['system:dict:edit']" @click.stop="openTypeDialog(record)">
                     <template #icon><EditOutlined /></template>
                     编辑
                   </a-button>
                   <a-popconfirm title="确认删除？" @confirm="handleDeleteType(record.dictId)">
-                    <a-button type="link" danger size="small" @click.stop>
+                    <a-button type="link" danger size="small" v-has-permi="['system:dict:remove']" @click.stop>
                       <template #icon><DeleteOutlined /></template>
                       删除
                     </a-button>
@@ -45,7 +45,7 @@
               <h3 class="panel-heading-title">字典数据 {{ currentType ? '- ' + currentType.dictName : '' }}</h3>
               <div class="panel-heading-desc">{{ currentType ? currentType.dictType : '先选择一个字典类型' }}</div>
             </div>
-            <a-button type="primary" :disabled="!currentType" @click="openDataDialog()">
+            <a-button type="primary" :disabled="!currentType" v-has-permi="['system:dict:add']" @click="openDataDialog()">
               <template #icon><PlusOutlined /></template>
               新增
             </a-button>
@@ -58,12 +58,12 @@
               </template>
               <template v-if="column.key === 'action'">
                 <div class="table-actions">
-                  <a-button type="link" size="small" @click="openDataDialog(record)">
+                  <a-button type="link" size="small" v-has-permi="['system:dict:edit']" @click="openDataDialog(record)">
                     <template #icon><EditOutlined /></template>
                     编辑
                   </a-button>
                   <a-popconfirm title="确认删除？" @confirm="handleDeleteData(record.dictCode)">
-                    <a-button type="link" danger size="small">
+                    <a-button type="link" danger size="small" v-has-permi="['system:dict:remove']">
                       <template #icon><DeleteOutlined /></template>
                       删除
                     </a-button>

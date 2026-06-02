@@ -12,15 +12,15 @@
             <template #icon><SearchOutlined /></template>
             搜索
           </a-button>
-          <a-button type="primary" @click="openDialog()">
+          <a-button type="primary" v-has-permi="['system:user:add']" @click="openDialog()">
             <template #icon><PlusOutlined /></template>
             新增
           </a-button>
-          <a-button @click="handleExport" :loading="exporting">
+          <a-button v-has-permi="['system:user:export']" @click="handleExport" :loading="exporting">
             <template #icon><DownloadOutlined /></template>
             导出
           </a-button>
-          <a-dropdown>
+          <a-dropdown v-has-permi="['system:user:import']">
             <a-button>
               <template #icon><UploadOutlined /></template>
               导入
@@ -54,16 +54,16 @@
           </template>
           <template v-if="column.key === 'action'">
             <div class="table-actions">
-              <a-button type="link" size="small" @click="openDialog(record)">
+              <a-button type="link" size="small" v-has-permi="['system:user:edit']" @click="openDialog(record)">
                 <template #icon><EditOutlined /></template>
                 编辑
               </a-button>
-              <a-button type="link" size="small" @click="openRoleDialog(record)">
+              <a-button type="link" size="small" v-has-permi="['system:user:edit']" @click="openRoleDialog(record)">
                 <template #icon><TeamOutlined /></template>
                 分配角色
               </a-button>
               <a-popconfirm title="确认删除？" @confirm="handleDelete(record.userId)">
-                <a-button type="link" danger size="small">
+                <a-button type="link" danger size="small" v-has-permi="['system:user:remove']">
                   <template #icon><DeleteOutlined /></template>
                   删除
                 </a-button>

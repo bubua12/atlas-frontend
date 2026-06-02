@@ -7,7 +7,7 @@
           <div class="page-subtitle">查询各服务的操作审计日志</div>
         </div>
         <div style="display: flex; gap: 8px;">
-          <a-button @click="handleExport" :loading="exporting">
+          <a-button v-has-permi="['monitor:operlog:export']" @click="handleExport" :loading="exporting">
             <template #icon><DownloadOutlined /></template>
             导出
           </a-button>
@@ -70,7 +70,7 @@
             <div class="table-actions">
               <a-button type="link" size="small" @click="handleDetail(record)">详情</a-button>
               <a-popconfirm title="确认删除？" @confirm="handleDelete(record.operId)">
-                <a-button type="link" danger size="small">删除</a-button>
+                <a-button type="link" danger size="small" v-has-permi="['monitor:operlog:delete']">删除</a-button>
               </a-popconfirm>
             </div>
           </template>
