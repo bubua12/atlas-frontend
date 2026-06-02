@@ -31,28 +31,27 @@ router.beforeEach(async (to, from, next) => {
   // 已登录访问登录页 → 重定向首页
   if (to.path === '/login') return next('/')
 
-  // 动态路由尚未加载 → 拉取菜单并注册
+  // 动态路由已加载 → 直接放行
   const menuStore = useMenuStore()
-  const userStore = useUserStore()
-  if (!menuStore.routesLoaded) {
-    try {
-      const routes = await menuStore.generateRoutes()
-      // 同时加载权限列表
-      await userStore.loadPermissions()
-      routes.forEach(route => router.addRoute('/', route))
-      // 添加 404 兜底路由（必须在所有动态路由之后）
-      router.addRoute({ path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/404' })
-      // 重新导航，确保新路由生效
-      return next({ ...to, replace: true })
-    } catch (e) {
-      console.error('[router] 加载动态菜单失败', e)
-      menuStore.resetRoutes()
-      userStore.permissions = []
-      return next('/login')
-    }
-  }
+  if (menuStore.routesLoaded) return next()
 
-  next()
+  // 正在加载中 → 直接放行（等加载完成后页面会自动刷新）
+  if (menuStore.loading) return next()
+
+  // 动态路由尚未加载 → 拉取菜单并注册
+  const userStore = useUserStore()
+  try {
+    const routes = await menuStore.generateRoutes()
+    await userStore.loadPermissions()
+    routes.forEach(route => router.addRoute('/', route))
+    router.addRoute({ path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/404' })
+    return next({ ...to, replace: true })
+  } catch (e) {
+    console.error('[router] 加载动态菜单失败', e)
+    // 清除登录态，防止无限重试（有 token → 跳 / → 又拉菜单 → 又失败 → 循环）
+    userStore.logout()
+    return next('/login')
+  }
 })
 
 export default router

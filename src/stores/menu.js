@@ -10,17 +10,24 @@ export const useMenuStore = defineStore('menu', () => {
   const menus = ref([])           // 菜单树（给 Sidebar 渲染用）
   const dynamicRoutes = ref([])   // 动态注册的路由列表（供 removeRoute 用）
   const routesLoaded = ref(false) // 动态路由是否已加载
+  const loading = ref(false)      // 是否正在加载中（防止并发重复请求）
 
   /**
    * 拉取菜单 → 转换为 vue-router 路由 → 返回路由数组
    */
   async function generateRoutes() {
-    const data = await getRouters()
-    menus.value = data || []
-    const routes = convertToRoutes(data || [])
-    dynamicRoutes.value = routes
-    routesLoaded.value = true
-    return routes
+    if (loading.value) return []  // 已在加载中，跳过
+    loading.value = true
+    try {
+      const data = await getRouters()
+      menus.value = data || []
+      const routes = convertToRoutes(data || [])
+      dynamicRoutes.value = routes
+      routesLoaded.value = true
+      return routes
+    } finally {
+      loading.value = false
+    }
   }
 
   /**
@@ -34,9 +41,10 @@ export const useMenuStore = defineStore('menu', () => {
     menus.value = []
     dynamicRoutes.value = []
     routesLoaded.value = false
+    loading.value = false
   }
 
-  return { menus, dynamicRoutes, routesLoaded, generateRoutes, resetRoutes }
+  return { menus, dynamicRoutes, routesLoaded, loading, generateRoutes, resetRoutes }
 })
 
 /**
