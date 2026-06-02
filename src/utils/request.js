@@ -58,6 +58,10 @@ request.interceptors.response.use(
       }
       return Promise.reject(err)
     }
+    // 403 权限不足：静默处理，不弹错误提示，由调用方自行决定展示逻辑
+    if (err.response?.status === 403) {
+      return Promise.reject(err)
+    }
     message.error(err.message || '网络错误')
     return Promise.reject(err)
   }

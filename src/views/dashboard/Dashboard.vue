@@ -30,7 +30,7 @@
     </div>
 
     <div class="dashboard-main">
-      <a-card class="page-panel recent-panel" :bordered="false">
+      <a-card v-if="hasLogPerm" class="page-panel recent-panel" :bordered="false">
         <div class="panel-heading">
           <div>
             <h3 class="panel-heading-title">最近操作日志</h3>
@@ -83,7 +83,7 @@
       </a-card>
 
       <div class="side-stack">
-        <a-card class="page-panel" :bordered="false">
+        <a-card v-if="hasServicePerm" class="page-panel" :bordered="false">
           <div class="panel-heading">
             <div>
               <h3 class="panel-heading-title">服务运行状态</h3>
@@ -167,6 +167,9 @@ const services = ref([])
 const recentLogs = ref([])
 const todayTotal = ref(null)
 const todayError = ref(null)
+const hasOnlinePerm = ref(true)
+const hasServicePerm = ref(true)
+const hasLogPerm = ref(true)
 
 const businessTypeMap = {
   0: '其他',
@@ -190,14 +193,15 @@ const greeting = computed(() => {
   return '晚上好'
 })
 
-const cards = computed(() => [
+const allCards = computed(() => [
   {
     title: '在线用户',
     value: onlineUsers.value.length,
     desc: '当前有效在线会话',
     color: '#1f4fbf',
     background: 'rgba(31, 79, 191, 0.14)',
-    icon: UserOutlined
+    icon: UserOutlined,
+    visible: hasOnlinePerm.value
   },
   {
     title: '今日操作',
@@ -205,7 +209,8 @@ const cards = computed(() => [
     desc: '今日产生的审计记录',
     color: '#63d685',
     background: 'rgba(99, 214, 133, 0.14)',
-    icon: FileTextOutlined
+    icon: FileTextOutlined,
+    visible: hasLogPerm.value
   },
   {
     title: '今日异常',
@@ -213,7 +218,8 @@ const cards = computed(() => [
     desc: '今日失败或异常操作',
     color: '#ff7875',
     background: 'rgba(255, 120, 117, 0.14)',
-    icon: todayError.value > 0 ? CloseCircleOutlined : CheckCircleOutlined
+    icon: todayError.value > 0 ? CloseCircleOutlined : CheckCircleOutlined,
+    visible: hasLogPerm.value
   },
   {
     title: '服务状态',
@@ -221,9 +227,11 @@ const cards = computed(() => [
     desc: '正常服务数 / 总服务数',
     color: '#f6b74b',
     background: 'rgba(246, 183, 75, 0.16)',
-    icon: CloudServerOutlined
+    icon: CloudServerOutlined,
+    visible: hasServicePerm.value
   }
 ])
+const cards = computed(() => allCards.value.filter(c => c.visible))
 
 const quickLinks = [
   { title: '用户管理', path: '/system/user', icon: UserOutlined },
@@ -295,6 +303,10 @@ async function loadDashboard() {
       request.get('/monitor/operlog', { params: { pageNum: 1, pageSize: 1, ...range } }),
       request.get('/monitor/operlog', { params: { pageNum: 1, pageSize: 1, status: 1, ...range } })
     ])
+
+    hasOnlinePerm.value = onlineRes.status === 'fulfilled'
+    hasServicePerm.value = serviceRes.status === 'fulfilled'
+    hasLogPerm.value = recentRes.status === 'fulfilled'
 
     if (onlineRes.status === 'fulfilled') onlineUsers.value = Array.isArray(onlineRes.value) ? onlineRes.value : []
     if (serviceRes.status === 'fulfilled') services.value = Array.isArray(serviceRes.value) ? serviceRes.value : []
