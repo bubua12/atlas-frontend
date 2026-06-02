@@ -7,65 +7,72 @@
         <div class="brand-subtitle">管理控制台</div>
       </div>
     </div>
-    <a-menu theme="dark" :selected-keys="[route.path]" mode="inline" class="side-menu" @click="({ key }) => router.push(key)">
+    <a-menu
+      theme="dark"
+      :selected-keys="selectedKeys"
+      :open-keys="openKeys"
+      mode="inline"
+      class="side-menu"
+      @click="handleMenuClick"
+      @openChange="onOpenChange"
+    >
+      <!-- 首页始终显示 -->
       <a-menu-item key="/dashboard">
         <template #icon><HomeOutlined /></template>
         首页
       </a-menu-item>
-      <a-sub-menu key="system">
-        <template #icon><SettingOutlined /></template>
-        <template #title>系统管理</template>
-        <a-menu-item key="/system/user"><template #icon><UserOutlined /></template>用户管理</a-menu-item>
-        <a-menu-item key="/system/role"><template #icon><TeamOutlined /></template>角色管理</a-menu-item>
-        <a-menu-item key="/system/menu"><template #icon><MenuOutlined /></template>菜单管理</a-menu-item>
-        <a-menu-item key="/system/dept"><template #icon><ApartmentOutlined /></template>部门管理</a-menu-item>
-        <a-menu-item key="/system/dict"><template #icon><BookOutlined /></template>字典管理</a-menu-item>
-        <a-menu-item key="/system/config"><template #icon><ToolOutlined /></template>系统设置</a-menu-item>
-      </a-sub-menu>
-      <a-sub-menu key="message">
-        <template #icon><MailOutlined /></template>
-        <template #title>消息中心</template>
-        <a-menu-item key="/message"><template #icon><MailOutlined /></template>我的消息</a-menu-item>
-      </a-sub-menu>
-      <a-sub-menu key="announce-manage">
-        <template #icon><NotificationOutlined /></template>
-        <template #title>消息管理</template>
-        <a-menu-item key="/system/announce"><template #icon><NotificationOutlined /></template>公告管理</a-menu-item>
-      </a-sub-menu>
-      <a-sub-menu key="monitor">
-        <template #icon><DesktopOutlined /></template>
-        <template #title>系统监控</template>
-        <a-menu-item key="/monitor/server"><template #icon><CloudServerOutlined /></template>服务监控</a-menu-item>
-        <a-menu-item key="/monitor/service"><template #icon><ClusterOutlined /></template>服务状态</a-menu-item>
-        <a-menu-item key="/monitor/online"><template #icon><UsergroupAddOutlined /></template>在线用户</a-menu-item>
-        <a-menu-item key="/monitor/operlog"><template #icon><FileTextOutlined /></template>操作日志</a-menu-item>
-      </a-sub-menu>
+      <!-- 动态菜单 -->
+      <template v-for="menu in visibleMenus" :key="menu.path">
+        <SubMenuRecursive :menu="menu" :parent-path="''" />
+      </template>
     </a-menu>
   </a-layout-sider>
 </template>
 
 <script setup>
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  ApartmentOutlined,
-  BookOutlined,
-  ClusterOutlined,
-  CloudServerOutlined,
-  DesktopOutlined,
-  FileTextOutlined,
-  HomeOutlined,
-  MailOutlined,
-  MenuOutlined,
-  NotificationOutlined,
-  SettingOutlined,
-  TeamOutlined,
-  ToolOutlined,
-  UsergroupAddOutlined,
-  UserOutlined
-} from '@ant-design/icons-vue'
+import { HomeOutlined } from '@ant-design/icons-vue'
+import { useMenuStore } from '@/stores/menu'
+import SubMenuRecursive from './SubMenuRecursive.vue'
 
 const route = useRoute()
 const router = useRouter()
+const menuStore = useMenuStore()
+
+const visibleMenus = computed(() => (menuStore.menus || []).filter(m => !m.hidden))
+
+// 选中的菜单项：匹配当前路由路径
+const selectedKeys = computed(() => [route.path])
+
+// 自动展开当前路由所在的子菜单
+const openKeys = ref([])
+
+// 根据路由路径计算应该展开的 key
+function computeOpenKeys(path) {
+  const parts = path.split('/').filter(Boolean)
+  const keys = []
+  // /system/user → ['/system']
+  // /monitor/server → ['/monitor']
+  if (parts.length > 1) {
+    keys.push(`/${parts[0]}`)
+  }
+  return keys
+}
+
+// 路由变化时自动展开对应子菜单
+import { watch } from 'vue'
+watch(() => route.path, (path) => {
+  openKeys.value = computeOpenKeys(path)
+}, { immediate: true })
+
+function handleMenuClick({ key }) {
+  router.push(key)
+}
+
+function onOpenChange(keys) {
+  openKeys.value = keys
+}
 </script>
 
 <style scoped>

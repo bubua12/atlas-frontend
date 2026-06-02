@@ -99,6 +99,12 @@
         <a-form-item label="路由地址">
           <a-input v-model:value="form.path" />
         </a-form-item>
+        <a-form-item label="组件路径" v-if="form.menuType !== 'F'">
+          <a-input v-model:value="form.component" placeholder="如 system/User 或 Layout" />
+        </a-form-item>
+        <a-form-item label="图标" v-if="form.menuType !== 'F'">
+          <a-input v-model:value="form.icon" placeholder="如 UserOutlined" />
+        </a-form-item>
         <a-form-item label="排序">
           <a-input-number v-model:value="form.sort" :min="0" />
         </a-form-item>
@@ -126,7 +132,7 @@ const selectedParentId = ref(null)
 const searchText = ref('')
 const dialogVisible = ref(false)
 const formRef = ref()
-const defaultForm = { menuId: null, menuName: '', parentId: 0, menuType: 'M', path: '', sort: 0, status: 0 }
+const defaultForm = { menuId: null, menuName: '', parentId: 0, menuType: 'M', path: '', component: '', icon: '#', sort: 0, status: 0 }
 const form = reactive({ ...defaultForm })
 const rules = { menuName: [{ required: true, message: '请输入菜单名称' }] }
 
@@ -134,7 +140,8 @@ const columns = [
   { title: '菜单名称', dataIndex: 'menuName', width: 200, ellipsis: true },
   { title: '图标', dataIndex: 'icon', width: 90, align: 'center' },
   { title: '排序', dataIndex: 'sort', width: 90, align: 'center' },
-  { title: '路由地址', dataIndex: 'path', width: 240, ellipsis: true },
+  { title: '路由地址', dataIndex: 'path', width: 200, ellipsis: true },
+  { title: '组件路径', dataIndex: 'component', width: 180, ellipsis: true },
   { title: '类型', key: 'menuType', width: 90, align: 'center' },
   { title: '状态', key: 'status', width: 90, align: 'center' },
   { title: '操作', key: 'action', width: 240, fixed: 'right' }

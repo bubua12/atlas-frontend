@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { login as loginApi } from '@/api/auth'
+import { useMenuStore } from '@/stores/menu'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')
@@ -24,6 +25,9 @@ export const useUserStore = defineStore('user', () => {
     profile.value = null
     localStorage.removeItem('token')
     localStorage.removeItem('username')
+    // 清理动态路由
+    const menuStore = useMenuStore()
+    menuStore.resetRoutes()
   }
 
   function setProfile(data) {

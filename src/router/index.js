@@ -1,35 +1,53 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useMenuStore } from '@/stores/menu'
 
-const routes = [
+const staticRoutes = [
   { path: '/login', component: () => import('@/views/login/Login.vue') },
+  { path: '/404', name: 'NotFoundPage', component: () => import('@/views/error/404.vue') },
   {
     path: '/',
     component: () => import('@/layout/index.vue'),
     redirect: '/dashboard',
     children: [
-      { path: 'dashboard', component: () => import('@/views/dashboard/Dashboard.vue'), meta: { title: '首页' } },
-      { path: 'profile', component: () => import('@/views/user/Profile.vue'), meta: { title: '个人中心' } },
-      { path: 'system/user', component: () => import('@/views/system/User.vue'), meta: { title: '用户管理' } },
-      { path: 'system/role', component: () => import('@/views/system/Role.vue'), meta: { title: '角色管理' } },
-      { path: 'system/menu', component: () => import('@/views/system/Menu.vue'), meta: { title: '菜单管理' } },
-      { path: 'system/dept', component: () => import('@/views/system/Dept.vue'), meta: { title: '部门管理' } },
-      { path: 'system/dict', component: () => import('@/views/system/Dict.vue'), meta: { title: '字典管理' } },
-      { path: 'system/config', component: () => import('@/views/system/Config.vue'), meta: { title: '系统设置' } },
-      { path: 'monitor/server', component: () => import('@/views/monitor/Server.vue'), meta: { title: '服务监控' } },
-      { path: 'monitor/online', component: () => import('@/views/monitor/Online.vue'), meta: { title: '在线用户' } },
-      { path: 'monitor/service', component: () => import('@/views/monitor/Service.vue'), meta: { title: '服务状态' } },
-      { path: 'monitor/operlog', component: () => import('@/views/monitor/OperLog.vue'), meta: { title: '操作日志' } },
-      { path: 'message', component: () => import('@/views/message/MessageCenter.vue'), meta: { title: '消息中心' } },
-      { path: 'system/announce', component: () => import('@/views/system/Announce.vue'), meta: { title: '公告管理' } }
+      { path: 'dashboard', name: 'Dashboard', component: () => import('@/views/dashboard/Dashboard.vue'), meta: { title: '首页' } },
+      { path: 'profile', name: 'Profile', component: () => import('@/views/user/Profile.vue'), meta: { title: '个人中心' } }
     ]
   }
 ]
 
-const router = createRouter({ history: createWebHistory(), routes })
+const router = createRouter({ history: createWebHistory(), routes: staticRoutes })
 
-router.beforeEach((to, from, next) => {
-  if (to.path !== '/login' && !localStorage.getItem('token')) next('/login')
-  else next()
+const whiteList = ['/login']
+
+router.beforeEach(async (to, from, next) => {
+  const token = localStorage.getItem('token')
+
+  // 未登录
+  if (!token) {
+    return whiteList.includes(to.path) ? next() : next('/login')
+  }
+
+  // 已登录访问登录页 → 重定向首页
+  if (to.path === '/login') return next('/')
+
+  // 动态路由尚未加载 → 拉取菜单并注册
+  const menuStore = useMenuStore()
+  if (!menuStore.routesLoaded) {
+    try {
+      const routes = await menuStore.generateRoutes()
+      routes.forEach(route => router.addRoute('/', route))
+      // 添加 404 兜底路由（必须在所有动态路由之后）
+      router.addRoute({ path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/404' })
+      // 重新导航，确保新路由生效
+      return next({ ...to, replace: true })
+    } catch (e) {
+      console.error('[router] 加载动态菜单失败', e)
+      menuStore.resetRoutes()
+      return next('/login')
+    }
+  }
+
+  next()
 })
 
 export default router
